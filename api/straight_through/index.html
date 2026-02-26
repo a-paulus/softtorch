@@ -1,0 +1,1721 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The documentation for the Softtorch software library.">
+      
+      
+        <meta name="author" content="Anselm Paulus">
+      
+      
+        <link rel="canonical" href="https://a-paulus.github.io/softtorch/api/straight_through/">
+      
+      
+        <link rel="prev" href="../softtorch_operators/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../_static/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Straight-through operators - Softtorch</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../assets/_hippogriffe.css">
+    
+      <link rel="stylesheet" href="../../_static/custom_css.css">
+    
+      <link rel="stylesheet" href="../../_static/hide-notebook-prompts.css">
+    
+      <link rel="stylesheet" href="../../_static/plots.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#straight-through-operators" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Softtorch" class="md-header__button md-logo" aria-label="Softtorch" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 2v2c-1.74 0-3 4.58-4.04 8.27-1.39 5-2.7 9.73-5.96 9.73s-4.57-4.73-5.96-9.73C5 8.58 3.74 4 2 4V2c3.26 0 4.57 4.73 5.96 9.73C9 15.42 10.26 20 12 20s3-4.58 4.04-8.27C17.43 6.73 18.74 2 22 2"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Softtorch
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Straight-through operators
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/a-paulus/softtorch" title="source.link.title" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    a-paulus/softtorch
+  </div>
+</a>
+<a href="https://twitter.com/AnselmPaulus" title="Go to Twitter" class="md-source">
+  <div class="md-source__icon md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M459.4 151.7c.3 4.5.3 9.1.3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53C87.4 130.8 165 172.4 252.1 176.9c-1.6-7.8-2.6-15.9-2.6-24C249.5 95.1 296.3 48 354.4 48c30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3"/></svg>
+  </div>
+  <div class="md-source__repository">
+    @AnselmPaulus
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Softtorch" class="md-nav__button md-logo" aria-label="Softtorch" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 2v2c-1.74 0-3 4.58-4.04 8.27-1.39 5-2.7 9.73-5.96 9.73s-4.57-4.73-5.96-9.73C5 8.58 3.74 4 2 4V2c3.26 0 4.57 4.73 5.96 9.73C9 15.42 10.26 20 12 20s3-4.58 4.04-8.27C17.43 6.73 18.74 2 22 2"/></svg>
+
+    </a>
+    Softtorch
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/a-paulus/softtorch" title="source.link.title" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    a-paulus/softtorch
+  </div>
+</a>
+<a href="https://twitter.com/AnselmPaulus" title="Go to Twitter" class="md-source">
+  <div class="md-source__icon md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M459.4 151.7c.3 4.5.3 9.1.3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53C87.4 130.8 165 172.4 252.1 176.9c-1.6-7.8-2.6-15.9-2.6-24C249.5 95.1 296.3 48 354.4 48c30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3"/></svg>
+  </div>
+  <div class="md-source__repository">
+    @AnselmPaulus
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../all-of-softtorch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    All of Softtorch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manifold_points/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Manifold Points
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../softtorch_operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Softtorch operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Straight-through operators
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Straight-through operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#straight-through-utility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Straight-through utility
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Straight-through utility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.grad_replace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;grad_replace
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#elementwise-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Elementwise operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Elementwise operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.abs_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;abs_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.clamp_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;clamp_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.heaviside_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;heaviside_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.relu_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;relu_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.round_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;round_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.sign_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;sign_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tensor-valued-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tensor-valued operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tensor-valued operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.argmax_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;argmax_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.max_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;max_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.argmin_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;argmin_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.min_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;min_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.argquantile_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;argquantile_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.quantile_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;quantile_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.argmedian_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;argmedian_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.median_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;median_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.argsort_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;argsort_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.sort_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;sort_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.topk_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;topk_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.rank_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;rank_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparison-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Comparison operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.greater_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;greater_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.greater_equal_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;greater_equal_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.less_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;less_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.less_equal_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;less_equal_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.eq_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;eq_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.not_equal_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;not_equal_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.isclose_st" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;isclose_st
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="straight-through-operators">Straight-through operators<a class="headerlink" href="#straight-through-operators" title="Permanent link">¤</a></h1>
+<h2 id="straight-through-utility">Straight-through utility<a class="headerlink" href="#straight-through-utility" title="Permanent link">¤</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">st</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L36-L73"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>This decorator calls the decorated function twice: once with <code>mode="hard"</code> and once with the specified <code>mode</code>.
+It returns the output from the hard forward pass, but uses the output from the soft backward pass to compute gradients.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>fn</code>: The function to be wrapped. It may accept a <code>mode</code> parameter. If <code>fn</code> has no <code>mode</code> parameter, it defaults to <code>"smooth"</code> and <code>mode</code> is passed through via <code>**kwargs</code>.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>A wrapped function that behaves like the <code>mode="hard"</code> version during the forward pass, but computes gradients using the specified <code>mode</code> and <code>softness</code> during the backward pass.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.grad_replace" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">grad_replace</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L10-L33"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.grad_replace" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>This decorator calls the decorated function twice: once with <code>forward=True</code> and once with <code>forward=False</code>.
+It returns the output from the forward pass, but uses the output from the backward pass to compute gradients.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>fn</code>: The function to be wrapped. It should accept a <code>forward</code> argument that specifies which computation to perform depending on forward or backward pass.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>A wrapped function that behaves like the <code>forward=True</code> version during the forward pass, but computes gradients using the <code>forward=False</code> version during the backward pass.</p>
+
+
+    </div>
+
+</div><h2 id="elementwise-operators">Elementwise operators<a class="headerlink" href="#elementwise-operators" title="Permanent link">¤</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.abs_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">abs_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L86-L92"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.abs_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.abs(x: torch.Tensor, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth') -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.abs"><code>softtorch.abs</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.abs)</code>.</p>
+<p>Returns the hard <code>abs</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.clamp_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">clamp_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L140-L146"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.clamp_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.clamp(x: torch.Tensor, a: torch.Tensor, b: torch.Tensor, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', gated: bool = False) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.clamp"><code>softtorch.clamp</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.clamp)</code>.</p>
+<p>Returns the hard <code>clamp</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.heaviside_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">heaviside_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L176-L182"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.heaviside_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.heaviside(x: torch.Tensor, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth') -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.heaviside"><code>softtorch.heaviside</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.heaviside)</code>.</p>
+<p>Returns the hard <code>heaviside</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.relu_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">relu_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L266-L272"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.relu_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.relu(x: torch.Tensor, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', gated: bool = False) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.relu"><code>softtorch.relu</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.relu)</code>.</p>
+<p>Returns the hard <code>relu</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.round_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">round_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L275-L281"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.round_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.round(x: torch.Tensor, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', neighbor_radius: int = 5) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.round"><code>softtorch.round</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.round)</code>.</p>
+<p>Returns the hard <code>round</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.sign_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">sign_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L284-L290"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.sign_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.sign(x: torch.Tensor, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth') -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.sign"><code>softtorch.sign</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.sign)</code>.</p>
+<p>Returns the hard <code>sign</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div><h2 id="tensor-valued-operators">Tensor-valued operators<a class="headerlink" href="#tensor-valued-operators" title="Permanent link">¤</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.argmax_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">argmax_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L95-L101"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.argmax_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.argmax(x: torch.Tensor, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'sorting_network'] = 'softsort', standardize: bool = True, ot_kwargs: dict | None = None) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.argmax"><code>softtorch.argmax</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.argmax)</code>.</p>
+<p>Returns the hard <code>argmax</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.max_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">max_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L212-L218"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.max_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.max(x: torch.Tensor, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'fast_soft_sort', 'smooth_sort', 'sorting_network'] = 'softsort', standardize: bool = True, ot_kwargs: dict | None = None, gated_grad: bool = True) -> torch.Tensor | torch.return_types.max[torch.Tensor, torch.Tensor]
+  " href="../softtorch_operators/#softtorch.max"><code>softtorch.max</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.max)</code>.</p>
+<p>Returns the hard <code>max</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.argmin_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">argmin_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L113-L119"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.argmin_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.argmin(x: torch.Tensor, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'sorting_network'] = 'softsort', standardize: bool = True, ot_kwargs: dict | None = None) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.argmin"><code>softtorch.argmin</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.argmin)</code>.</p>
+<p>Returns the hard <code>argmin</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.min_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">min_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L230-L236"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.min_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.min(x: torch.Tensor, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'fast_soft_sort', 'smooth_sort', 'sorting_network'] = 'softsort', standardize: bool = True, ot_kwargs: dict | None = None, gated_grad: bool = True) -> torch.Tensor | torch.return_types.min[torch.Tensor, torch.Tensor]
+  " href="../softtorch_operators/#softtorch.min"><code>softtorch.min</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.min)</code>.</p>
+<p>Returns the hard <code>min</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.argquantile_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">argquantile_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L122-L128"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.argquantile_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.argquantile(x: torch.Tensor, q: torch.Tensor | float, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'sorting_network'] = 'neuralsort', interpolation: Literal['linear', 'lower', 'higher', 'nearest', 'midpoint'] = 'linear', standardize: bool = True, ot_kwargs: dict | None = None) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.argquantile"><code>softtorch.argquantile</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.argquantile)</code>.</p>
+<p>Returns the hard <code>argquantile</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.quantile_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">quantile_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L248-L254"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.quantile_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.quantile(x: torch.Tensor, q: torch.Tensor | float, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'fast_soft_sort', 'smooth_sort', 'sorting_network'] = 'neuralsort', interpolation: Literal['linear', 'lower', 'higher', 'nearest', 'midpoint'] = 'linear', standardize: bool = True, ot_kwargs: dict | None = None, return_argquantile: bool = False, gated_grad: bool = True) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.quantile"><code>softtorch.quantile</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.quantile)</code>.</p>
+<p>Returns the hard <code>quantile</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.argmedian_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">argmedian_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L104-L110"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.argmedian_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.argmedian(x: torch.Tensor, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'sorting_network'] = 'neuralsort', standardize: bool = True, ot_kwargs: dict | None = None) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.argmedian"><code>softtorch.argmedian</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.argmedian)</code>.</p>
+<p>Returns the hard <code>argmedian</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.median_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">median_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L221-L227"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.median_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.median(x: torch.Tensor, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'fast_soft_sort', 'smooth_sort', 'sorting_network'] = 'neuralsort', standardize: bool = True, ot_kwargs: dict | None = None, gated_grad: bool = True) -> torch.Tensor | torch.return_types.median[torch.Tensor, torch.Tensor]
+  " href="../softtorch_operators/#softtorch.median"><code>softtorch.median</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.median)</code>.</p>
+<p>Returns the hard <code>median</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.argsort_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">argsort_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L131-L137"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.argsort_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.argsort(x: torch.Tensor, dim: int | None = -1, descending: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'sorting_network'] = 'neuralsort', standardize: bool = True, ot_kwargs: dict | None = None) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.argsort"><code>softtorch.argsort</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.argsort)</code>.</p>
+<p>Returns the hard <code>argsort</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.sort_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">sort_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L293-L299"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.sort_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.sort(x: torch.Tensor, dim: int | None = -1, descending: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'fast_soft_sort', 'smooth_sort', 'sorting_network'] = 'neuralsort', standardize: bool = True, ot_kwargs: dict | None = None, gated_grad: bool = True, return_indices: bool = True) -> torch.return_types.sort[torch.Tensor, torch.Tensor]
+  " href="../softtorch_operators/#softtorch.sort"><code>softtorch.sort</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.sort)</code>.</p>
+<p>Returns the hard <code>sort</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.topk_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">topk_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L302-L308"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.topk_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.topk(x: torch.Tensor, k: int, dim: int | None = None, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'fast_soft_sort', 'smooth_sort', 'sorting_network'] = 'neuralsort', standardize: bool = True, ot_kwargs: dict | None = None, gated_grad: bool = True) -> torch.return_types.topk[torch.Tensor, torch.Tensor]
+  " href="../softtorch_operators/#softtorch.topk"><code>softtorch.topk</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.topk)</code>.</p>
+<p>Returns the hard <code>topk</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.rank_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">rank_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L257-L263"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.rank_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.rank(x: torch.Tensor, dim: int | None = None, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'fast_soft_sort', 'smooth_sort', 'sorting_network'] = 'neuralsort', descending: bool = True, standardize: bool = True, ot_kwargs: dict | None = None) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.rank"><code>softtorch.rank</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.rank)</code>.</p>
+<p>Returns the hard <code>rank</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div><h2 id="comparison-operators">Comparison operators<a class="headerlink" href="#comparison-operators" title="Permanent link">¤</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.greater_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">greater_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L158-L164"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.greater_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.greater(x: torch.Tensor, y: torch.Tensor, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', epsilon: float = 1e-10) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.greater"><code>softtorch.greater</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.greater)</code>.</p>
+<p>Returns the hard <code>greater</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.greater_equal_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">greater_equal_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L167-L173"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.greater_equal_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.greater_equal(x: torch.Tensor, y: torch.Tensor, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', epsilon: float = 1e-10) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.greater_equal"><code>softtorch.greater_equal</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.greater_equal)</code>.</p>
+<p>Returns the hard <code>greater_equal</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.less_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">less_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L194-L200"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.less_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.less(x: torch.Tensor, y: torch.Tensor, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', epsilon: float = 1e-10) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.less"><code>softtorch.less</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.less)</code>.</p>
+<p>Returns the hard <code>less</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.less_equal_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">less_equal_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L203-L209"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.less_equal_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.less_equal(x: torch.Tensor, y: torch.Tensor, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', epsilon: float = 1e-10) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.less_equal"><code>softtorch.less_equal</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.less_equal)</code>.</p>
+<p>Returns the hard <code>less_equal</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.eq_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">eq_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L149-L155"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.eq_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.eq(x: torch.Tensor, y: torch.Tensor, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', epsilon: float = 1e-10) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.eq"><code>softtorch.eq</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.eq)</code>.</p>
+<p>Returns the hard <code>eq</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.not_equal_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">not_equal_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L239-L245"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.not_equal_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.not_equal(x: torch.Tensor, y: torch.Tensor, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', epsilon: float = 1e-10) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.not_equal"><code>softtorch.not_equal</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.not_equal)</code>.</p>
+<p>Returns the hard <code>not_equal</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.isclose_st" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">isclose_st</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/straight_through.py#L185-L191"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.isclose_st" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Straight-through version of <a class="autorefs autorefs-internal" title="            softtorch.isclose(x: torch.Tensor, y: torch.Tensor, softness: float = 0.1, rtol: float = 1e-05, atol: float = 1e-08, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', epsilon: float = 1e-10) -> torch.Tensor
+  " href="../softtorch_operators/#softtorch.isclose"><code>softtorch.isclose</code></a>.
+Implemented using the <a class="autorefs autorefs-internal" title="            softtorch.st(fn: Callable) -> Callable
+  " href="#softtorch.st"><code>softtorch.st</code></a> decorator as <code>st(softtorch.isclose)</code>.</p>
+<p>Returns the hard <code>isclose</code> during the forward pass, but uses a soft relaxation (controlled by the <code>mode</code> argument) for the backward pass (i.e., gradients are computed through the soft version).</p>
+
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "toc.integrate", "header.autohide"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../_static/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,8 @@
+code.hippogriffe-repo-url {
+  background-color: rgba(0,0,0,0);
+}
+
+code.hippogriffe-repo-url::after {
+  font-size: 0.7rem;
+  content: "[source]";
+}

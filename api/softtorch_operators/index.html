@@ -1,0 +1,2506 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The documentation for the Softtorch software library.">
+      
+      
+        <meta name="author" content="Anselm Paulus">
+      
+      
+        <link rel="canonical" href="https://a-paulus.github.io/softtorch/api/softtorch_operators/">
+      
+      
+        <link rel="prev" href="../../manifold_points/">
+      
+      
+        <link rel="next" href="../straight_through/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../_static/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Softtorch operators - Softtorch</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../assets/_hippogriffe.css">
+    
+      <link rel="stylesheet" href="../../_static/custom_css.css">
+    
+      <link rel="stylesheet" href="../../_static/hide-notebook-prompts.css">
+    
+      <link rel="stylesheet" href="../../_static/plots.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#softtorch-operators" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Softtorch" class="md-header__button md-logo" aria-label="Softtorch" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 2v2c-1.74 0-3 4.58-4.04 8.27-1.39 5-2.7 9.73-5.96 9.73s-4.57-4.73-5.96-9.73C5 8.58 3.74 4 2 4V2c3.26 0 4.57 4.73 5.96 9.73C9 15.42 10.26 20 12 20s3-4.58 4.04-8.27C17.43 6.73 18.74 2 22 2"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Softtorch
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Softtorch operators
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/a-paulus/softtorch" title="source.link.title" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    a-paulus/softtorch
+  </div>
+</a>
+<a href="https://twitter.com/AnselmPaulus" title="Go to Twitter" class="md-source">
+  <div class="md-source__icon md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M459.4 151.7c.3 4.5.3 9.1.3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53C87.4 130.8 165 172.4 252.1 176.9c-1.6-7.8-2.6-15.9-2.6-24C249.5 95.1 296.3 48 354.4 48c30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3"/></svg>
+  </div>
+  <div class="md-source__repository">
+    @AnselmPaulus
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Softtorch" class="md-nav__button md-logo" aria-label="Softtorch" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 2v2c-1.74 0-3 4.58-4.04 8.27-1.39 5-2.7 9.73-5.96 9.73s-4.57-4.73-5.96-9.73C5 8.58 3.74 4 2 4V2c3.26 0 4.57 4.73 5.96 9.73C9 15.42 10.26 20 12 20s3-4.58 4.04-8.27C17.43 6.73 18.74 2 22 2"/></svg>
+
+    </a>
+    Softtorch
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/a-paulus/softtorch" title="source.link.title" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    a-paulus/softtorch
+  </div>
+</a>
+<a href="https://twitter.com/AnselmPaulus" title="Go to Twitter" class="md-source">
+  <div class="md-source__icon md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M459.4 151.7c.3 4.5.3 9.1.3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53C87.4 130.8 165 172.4 252.1 176.9c-1.6-7.8-2.6-15.9-2.6-24C249.5 95.1 296.3 48 354.4 48c30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3"/></svg>
+  </div>
+  <div class="md-source__repository">
+    @AnselmPaulus
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../all-of-softtorch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    All of Softtorch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manifold_points/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Manifold Points
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Softtorch operators
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Softtorch operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#helper-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Helper functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Helper functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.sigmoidal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;sigmoidal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.softrelu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;softrelu
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#elementwise-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Elementwise operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Elementwise operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.abs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;abs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.clamp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;clamp
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.heaviside" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;heaviside
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.relu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;relu
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.round" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;round
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.sign" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;sign
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tensor-valued-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tensor-valued operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tensor-valued operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.argmax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;argmax
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.max" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;max
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.argmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;argmin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;min
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.argquantile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;argquantile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.quantile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;quantile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.argmedian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;argmedian
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.median" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;median
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.argsort" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;argsort
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.sort" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;sort
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.topk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;topk
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.rank" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;rank
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparison-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Comparison operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.greater" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;greater
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.greater_equal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;greater_equal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.less" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;less
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.less_equal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;less_equal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.eq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;eq
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.not_equal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;not_equal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.isclose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;isclose
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logical-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logical operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Logical operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.logical_and" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;logical_and
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.logical_not" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;logical_not
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.logical_or" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;logical_or
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.logical_xor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;logical_xor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;all
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;any
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#selection-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selection operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Selection operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.where" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;where
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.take_along_dim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;take_along_dim
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.take" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;take
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.index_select" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;index_select
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softtorch.narrow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;narrow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../straight_through/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Straight-through operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="softtorch-operators">Softtorch operators<a class="headerlink" href="#softtorch-operators" title="Permanent link">¤</a></h1>
+<h2 id="helper-functions">Helper functions<a class="headerlink" href="#helper-functions" title="Permanent link">¤</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.sigmoidal" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">sigmoidal</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;_c1_pnorm&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">,</span> <span class="s1">&#39;_c2_pnorm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L1609-L1713"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.sigmoidal" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Sigmoidal functions defining a characteristic S-shaped curve.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: Choice of smoothing family for the surrogate step.<ul>
+<li><code>smooth</code>: Smooth sigmoidal based on the logistic function.</li>
+<li><code>c0</code>: Continuous sigmoidal based on a piecewise quadratic polynomial.</li>
+<li><code>c1</code>: Differentiable sigmoidal based on a piecewise cubic polynomial.</li>
+<li><code>c2</code>: Twice differentiable sigmoidal based on a piecewise quintic polynomial.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>SoftBool of same shape as <code>x</code> (Tensor with values in [0, 1]).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.softrelu" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">softrelu</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;_c1_pnorm&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">,</span> <span class="s1">&#39;_c2_pnorm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">gated</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L1716-L1833"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.softrelu" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Family of soft relaxations to ReLU.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: Choice of <a class="autorefs autorefs-internal" title="            softtorch.sigmoidal(x: torch.Tensor, softness: float = 0.1, mode: Literal['smooth', 'c0', 'c1', '_c1_pnorm', 'c2', '_c2_pnorm'] = 'smooth') -> torch.Tensor
+  " href="#softtorch.sigmoidal"><code>softtorch.sigmoidal</code></a> smoothing mode, options are "smooth", "c0", "c1", "_c1_pnorm", "c2", or "_c2_pnorm".</li>
+<li><code>gated</code>: If True, uses the 'gated' version <code>x * sigmoidal(x)</code>. If False, uses the integral of the sigmoidal.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Result of applying soft elementwise ReLU to <code>x</code>.</p>
+
+
+    </div>
+
+</div><h2 id="elementwise-operators">Elementwise operators<a class="headerlink" href="#elementwise-operators" title="Permanent link">¤</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.abs" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L1925-L1948"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.abs" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.abs.html">torch.abs</a>.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of any shape.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: Projection mode. "hard" returns the exact absolute value. Otherwise uses <a class="autorefs autorefs-internal" title="            softtorch.sigmoidal(x: torch.Tensor, softness: float = 0.1, mode: Literal['smooth', 'c0', 'c1', '_c1_pnorm', 'c2', '_c2_pnorm'] = 'smooth') -> torch.Tensor
+  " href="#softtorch.sigmoidal"><code>softtorch.sigmoidal</code></a>-based "smooth", "c0", "c1", "c2" relaxations.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Result of applying soft elementwise absolute value to <code>x</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.clamp" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">gated</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L1979-L2010"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.clamp" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.clamp.html">torch.clamp</a>.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of any shape.</li>
+<li><code>a</code>: Lower bound scalar.</li>
+<li><code>b</code>: Upper bound scalar.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: If "hard", applies <code>torch.clamp</code>. Otherwise uses <a class="autorefs autorefs-internal" title="            softtorch.softrelu(x: torch.Tensor, softness: float = 0.1, mode: Literal['smooth', 'c0', 'c1', '_c1_pnorm', 'c2', '_c2_pnorm'] = 'smooth', gated: bool = False) -> torch.Tensor
+  " href="#softtorch.softrelu"><code>softtorch.softrelu</code></a>-based "smooth", "c0", "c1", "c2" relaxations.</li>
+<li><code>gated</code>: See <a class="autorefs autorefs-internal" title="            softtorch.softrelu(x: torch.Tensor, softness: float = 0.1, mode: Literal['smooth', 'c0', 'c1', '_c1_pnorm', 'c2', '_c2_pnorm'] = 'smooth', gated: bool = False) -> torch.Tensor
+  " href="#softtorch.softrelu"><code>softtorch.softrelu</code></a> documentation.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Result of applying soft elementwise clamping to <code>x</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.heaviside" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">heaviside</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L1836-L1859"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.heaviside" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.heaviside.html">torch.heaviside</a>(x,0.5).</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of any shape.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: If "hard", returns the exact Heaviside step. Otherwise uses <a class="autorefs autorefs-internal" title="            softtorch.sigmoidal(x: torch.Tensor, softness: float = 0.1, mode: Literal['smooth', 'c0', 'c1', '_c1_pnorm', 'c2', '_c2_pnorm'] = 'smooth') -> torch.Tensor
+  " href="#softtorch.sigmoidal"><code>softtorch.sigmoidal</code></a>-based "smooth", "c0", "c1", "c2" relaxations.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>SoftBool of same shape as <code>x</code> (Tensor with values in [0, 1]), relaxing the elementwise Heaviside step function.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.relu" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">gated</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L1951-L1976"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.relu" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.relu.html">torch.relu</a>.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of any shape.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: If "hard", applies <code>torch.relu</code>. Otherwise uses <a class="autorefs autorefs-internal" title="            softtorch.softrelu(x: torch.Tensor, softness: float = 0.1, mode: Literal['smooth', 'c0', 'c1', '_c1_pnorm', 'c2', '_c2_pnorm'] = 'smooth', gated: bool = False) -> torch.Tensor
+  " href="#softtorch.softrelu"><code>softtorch.softrelu</code></a> with "smooth", "c0", "c1", "c2" relaxations.</li>
+<li><code>gated</code>: See <a class="autorefs autorefs-internal" title="            softtorch.softrelu(x: torch.Tensor, softness: float = 0.1, mode: Literal['smooth', 'c0', 'c1', '_c1_pnorm', 'c2', '_c2_pnorm'] = 'smooth', gated: bool = False) -> torch.Tensor
+  " href="#softtorch.softrelu"><code>softtorch.softrelu</code></a> documentation.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Result of applying soft elementwise ReLU to <code>x</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.round" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">neighbor_radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L1862-L1896"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.round" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.round.html">torch.round</a>.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of any shape.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: If "hard", applies <code>torch.round</code>. Otherwise uses a sigmoidal-based relaxation based on the algorithm described in <a href="https://arxiv.org/pdf/2504.19026v1">Smooth Approximations of the Rounding Function</a>.
+    Supports the <a class="autorefs autorefs-internal" title="            softtorch.sigmoidal(x: torch.Tensor, softness: float = 0.1, mode: Literal['smooth', 'c0', 'c1', '_c1_pnorm', 'c2', '_c2_pnorm'] = 'smooth') -> torch.Tensor
+  " href="#softtorch.sigmoidal"><code>softtorch.sigmoidal</code></a> modes "smooth", "c0", "c1", "c2".</li>
+<li><code>neighbor_radius</code>: Number of neighbors on each side of the floor value to consider for the soft rounding.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Result of applying soft elementwise rounding to <code>x</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.sign" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L1899-L1922"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.sign" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.sign.html">torch.sign</a>.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of any shape.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: If "hard", returns <code>torch.sign</code>. Otherwise uses <a class="autorefs autorefs-internal" title="            softtorch.sigmoidal(x: torch.Tensor, softness: float = 0.1, mode: Literal['smooth', 'c0', 'c1', '_c1_pnorm', 'c2', '_c2_pnorm'] = 'smooth') -> torch.Tensor
+  " href="#softtorch.sigmoidal"><code>softtorch.sigmoidal</code></a>-based "smooth", "c0", "c1", "c2" relaxations.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Result of applying soft elementwise sign to <code>x</code>.</p>
+
+
+    </div>
+
+</div><h2 id="tensor-valued-operators">Tensor-valued operators<a class="headerlink" href="#tensor-valued-operators" title="Permanent link">¤</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.argmax" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ot&#39;</span><span class="p">,</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="s1">&#39;sorting_network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="n">standardize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ot_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L201-L311"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.argmax" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.argmax.html">torch.argmax</a> of <code>x</code> along the specified dim.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of shape (..., n, ...).</li>
+<li><code>dim</code>: The dimension along which to compute the argmax. If None, the input Tensor is flattened before computing the argmax.</li>
+<li><code>keepdim</code>: If True, keeps the reduced dimension as a singleton {1}.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: Type of regularizer in the projection operators.<ul>
+<li><code>hard</code>: Returns the result of torch.argmax with a one-hot encoding of the indices.</li>
+<li><code>smooth</code>: C∞ smooth (entropy-based). Soften unit simplex projection via an entropic regularizer, computed in closed-form via a softmax operation.</li>
+<li><code>c0</code>: C0 continuous (L2-based). Soften unit simplex projection via a quadratic regularizer, computed via the algorithm in <a href="https://arxiv.org/pdf/1309.1541">Projection onto the probability simplex: An eﬃcient algorithm with a simple proof, and an application</a>.</li>
+<li><code>c1</code>: C1 differentiable (p=3/2 p-norm). Computed in closed form via quadratic formula.</li>
+<li><code>c2</code>: C2 twice differentiable (p=4/3 p-norm). Computed in closed form via Cardano's method.</li>
+</ul>
+</li>
+<li><code>method</code>: Method to compute the soft argmax. All approaches were originally proposed for the smooth mode, we extend them to the c0,c1,c2 modes as well.<ul>
+<li><code>ot</code>: Computes the max element via optimal transport projection onto a 2-point support.</li>
+<li><code>softsort</code>: Computes the max element of the "SoftSort" operator from <a href="https://arxiv.org/pdf/2006.16038">SoftSort: A Continuous Relaxation for the argsort Operator</a>. Reduces to projecting <code>x</code> onto the unit simplex.</li>
+<li><code>neuralsort</code>: Computes the max element of the "NeuralSort" operator from <a href="https://arxiv.org/abs/1903.08850">Stochastic Optimization of Sorting Networks via Continuous Relaxations</a>.</li>
+</ul>
+</li>
+<li>
+<p><code>standardize</code>: If True, standardizes and squashes the input <code>x</code> along the specified dim before applying the softargmax operation. This can improve numerical stability and performance, especially when the values in <code>x</code> vary widely in scale.</p>
+</li>
+<li>
+<p><code>ot_kwargs</code>: Additional optional keyword arguments to pass to the OT projection operator, e.g., to control the number of max iterations or tolerance.</p>
+</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>A SoftIndex of shape (..., {1}, ..., [n]) (positive Tensor which sums to 1 over the last dimension).
+Represents the probability of an index corresponding to the argmax along the specified dim.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.max" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ot&#39;</span><span class="p">,</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="s1">&#39;fast_soft_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;sorting_network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="n">standardize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ot_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">gated_grad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">torch</span><span class="o">.</span><span class="n">return_types</span><span class="o">.</span><span class="n">max</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L314-L407"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.max" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.max.html">torch.max</a> of <code>x</code> along the specified dim.</p>
+<p>For methods other than <code>fast_soft_sort</code> and <code>sorting_network</code>, implemented as <a class="autorefs autorefs-internal" title="            softtorch.argmax(x: torch.Tensor, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'sorting_network'] = 'softsort', standardize: bool = True, ot_kwargs: dict | None = None) -> torch.Tensor
+  " href="#softtorch.argmax"><code>softtorch.argmax</code></a> followed by <a class="autorefs autorefs-internal" title="            softtorch.take_along_dim(x: torch.Tensor, soft_index: torch.Tensor, dim: int | None = None) -> torch.Tensor
+  " href="#softtorch.take_along_dim"><code>softtorch.take_along_dim</code></a>, see respective documentations for details.
+For <code>fast_soft_sort</code> and <code>sorting_network</code>, uses <a class="autorefs autorefs-internal" title="            softtorch.sort(x: torch.Tensor, dim: int | None = -1, descending: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'fast_soft_sort', 'smooth_sort', 'sorting_network'] = 'neuralsort', standardize: bool = True, ot_kwargs: dict | None = None, gated_grad: bool = True, return_indices: bool = True) -> torch.return_types.sort[torch.Tensor, torch.Tensor]
+  " href="#softtorch.sort"><code>softtorch.sort</code></a> to compute soft sorted values and retrieves the maximum as the first element. See <a class="autorefs autorefs-internal" title="            softtorch.sort(x: torch.Tensor, dim: int | None = -1, descending: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'fast_soft_sort', 'smooth_sort', 'sorting_network'] = 'neuralsort', standardize: bool = True, ot_kwargs: dict | None = None, gated_grad: bool = True, return_indices: bool = True) -> torch.return_types.sort[torch.Tensor, torch.Tensor]
+  " href="#softtorch.sort"><code>softtorch.sort</code></a> for method details.</p>
+<p><strong>Extra Arguments:</strong></p>
+<ul>
+<li><code>gated_grad</code>: If <code>False</code>, stops the gradient flow through the soft index. True gives gated 'SiLU-style' gradients, while False gives integrated 'Softplus-style' gradients.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li>If <code>dim</code> is None (default):  Scalar tensor representing the soft maximum of the flattened <code>x</code>.</li>
+<li>If <code>dim</code> is specified: Namedtuple containing two fields:<ul>
+<li><code>values</code>: Tensor of shape (..., {1}, ...) representing the soft maximum of <code>x</code>  along the specified dim.</li>
+<li><code>indices</code>: SoftIndex of shape (..., {1}, ..., [n]) (positive Tensor which sums to 1 over the last dimension). Represents the soft  indices of the maximum values.</li>
+</ul>
+</li>
+</ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.argmin" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ot&#39;</span><span class="p">,</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="s1">&#39;sorting_network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="n">standardize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ot_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L410-L432"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.argmin" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.argmin.html">torch.argmin</a> of <code>x</code> along the specified dim.
+Implemented as <a class="autorefs autorefs-internal" title="            softtorch.argmax(x: torch.Tensor, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'sorting_network'] = 'softsort', standardize: bool = True, ot_kwargs: dict | None = None) -> torch.Tensor
+  " href="#softtorch.argmax"><code>softtorch.argmax</code></a> on <code>-x</code>, see respective documentation for details.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.min" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ot&#39;</span><span class="p">,</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="s1">&#39;fast_soft_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;sorting_network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="n">standardize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ot_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">gated_grad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">torch</span><span class="o">.</span><span class="n">return_types</span><span class="o">.</span><span class="n">min</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L435-L477"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.min" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.min.html">torch.min</a> of <code>x</code> along the specified dim.
+Implemented via <a class="autorefs autorefs-internal" title="            softtorch.max(x: torch.Tensor, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'fast_soft_sort', 'smooth_sort', 'sorting_network'] = 'softsort', standardize: bool = True, ot_kwargs: dict | None = None, gated_grad: bool = True) -> torch.Tensor | torch.return_types.max[torch.Tensor, torch.Tensor]
+  " href="#softtorch.max"><code>softtorch.max</code></a> on <code>-x</code>, see respective documentation for details.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.argquantile" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">argquantile</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ot&#39;</span><span class="p">,</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="s1">&#39;sorting_network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="s1">&#39;higher&#39;</span><span class="p">,</span> <span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="s1">&#39;midpoint&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">standardize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ot_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L717-L955"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.argquantile" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.quantile.html">torch.quantile</a>
+of <code>x</code> along the specified dim.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of shape (..., n, ...).</li>
+<li><code>q</code>: Scalar quantile or 1-D Tensor of quantiles in [0, 1]. When a 1-D tensor of length k is passed, the q dimension is prepended to the output shape.</li>
+<li><code>dim</code>: The dim along which to compute the argquantile. If None, the input Tensor is flattened before computing the argquantile.</li>
+<li><code>keepdim</code>: If True, keeps the reduced dimension as a singleton {1}.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: Type of regularizer in the projection operators.<ul>
+<li><code>hard</code>: Returns a one/two-hot encoding of the indices corresponding to the torch.quantile definitions.</li>
+<li><code>smooth</code>: Soften projections via an entropic regularizer.<ul>
+<li>For unit simplex projection (<code>softsort</code>/<code>neuralsort</code> methods), projection is computed in closed-form via a softmax operation.</li>
+<li>For optimal transport (<code>ot</code> method), transport plan is computed via Sinkhorn iterations (see <a href="https://arxiv.org/abs/1306.0895">Sinkhorn Distances: Lightspeed Computation of Optimal Transportation Distances</a>).</li>
+</ul>
+</li>
+<li><code>c0</code>: Soften projections via a quadratic regularizer.<ul>
+<li>For unit simplex projection (<code>softsort</code>/<code>neuralsort</code> methods), projection is computed in closed-form via the algorithm in <a href="https://arxiv.org/pdf/1309.1541">Projection onto the probability simplex: An eﬃcient algorithm with a simple proof, and an application</a>.</li>
+<li>For optimal transport (<code>ot</code> method), transport plan is computed via LBFGS (see <a href="https://arxiv.org/abs/1710.06276">Smooth and Sparse Optimal Transport</a>).</li>
+</ul>
+</li>
+<li><code>c1</code>/<code>c2</code>: C1 differentiable / C2 twice differentiable. Similar to <code>c0</code>, but using p-norm regularizers with p=3/2 and p=4/3, respectively.</li>
+</ul>
+</li>
+<li><code>method</code>: Method to compute the soft argquantile. All approaches were originally proposed for the smooth mode, we extend them to the c0,c1,c2 modes as well.<ul>
+<li><code>ot</code>: Uses a variation of the soft quantile approach in <a href="https://arxiv.org/pdf/1905.11885">Differentiable Ranks and Sorting using Optimal Transport</a>, which is adapted to converge to the standard quantile definitions for small softness. Depending on the interpolation, either a lower and upper quantile are computed and combined, or just a single quantile is computed.
+    Intuition: The sorted elements are selected by specifying 4 or 3 "anchors" and then transporting the upper/lower quantile values to the appropriate anchors.
+    Note: <code>sinkhorn_max_iter</code> and <code>sinkhorn_tol</code> can be passed via <code>ot_kwargs</code> to control convergence.</li>
+<li><code>softsort</code>: Computes the upper and lower quantiles via the "SoftSort" operator from <a href="https://arxiv.org/pdf/2006.16038">SoftSort: A Continuous Relaxation for the argsort Operator</a>.
+    Note: Can introduce gradient discontinuities when elements in <code>x</code> are not unique, but is much faster than OT-based method.</li>
+<li><code>neuralsort</code>: Computes the upper and lower quantiles via the "NeuralSort" operator from <a href="https://arxiv.org/abs/1903.08850">Stochastic Optimization of Sorting Networks via Continuous Relaxations</a>.</li>
+</ul>
+</li>
+<li><code>interpolation</code>: Method to compute the quantile, following the options in <a href="https://pytorch.org/docs/stable/generated/torch.quantile.html">torch.quantile</a>.</li>
+<li>
+<p><code>standardize</code>: If True, standardizes and squashes the input <code>x</code> along the specified dim before applying the softargquantile operation. This can improve numerical stability and performance, especially when the values in <code>x</code> vary widely in scale.</p>
+</li>
+<li>
+<p><code>ot_kwargs</code>: Additional optional keyword arguments to pass to the OT projection operator, e.g., to control the number of max iterations or tolerance.</p>
+</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>A SoftIndex of shape (..., {1}, ..., [n]) for scalar q, or (k, ..., {1}, ..., [n]) for vector q of length k (q dimension prepended). Positive Tensor which sums to 1 over the last dimension. It represents a distribution over values in x being the q-quantile along the specified dim.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.quantile" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ot&#39;</span><span class="p">,</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="s1">&#39;fast_soft_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;sorting_network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="s1">&#39;higher&#39;</span><span class="p">,</span> <span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="s1">&#39;midpoint&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">standardize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ot_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_argquantile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">gated_grad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L958-L1097"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.quantile" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.quantile.html">torch.quantile</a> of <code>x</code> along the specified dim.</p>
+<p>For methods other than <code>fast_soft_sort</code> and <code>sorting_network</code>, implemented as <a class="autorefs autorefs-internal" title="            softtorch.argquantile(x: torch.Tensor, q: torch.Tensor | float, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'sorting_network'] = 'neuralsort', interpolation: Literal['linear', 'lower', 'higher', 'nearest', 'midpoint'] = 'linear', standardize: bool = True, ot_kwargs: dict | None = None) -> torch.Tensor
+  " href="#softtorch.argquantile"><code>softtorch.argquantile</code></a> followed by <a class="autorefs autorefs-internal" title="            softtorch.take_along_dim(x: torch.Tensor, soft_index: torch.Tensor, dim: int | None = None) -> torch.Tensor
+  " href="#softtorch.take_along_dim"><code>softtorch.take_along_dim</code></a>, see respective documentations for details.
+For <code>fast_soft_sort</code> and <code>sorting_network</code>, uses <a class="autorefs autorefs-internal" title="            softtorch.sort(x: torch.Tensor, dim: int | None = -1, descending: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'fast_soft_sort', 'smooth_sort', 'sorting_network'] = 'neuralsort', standardize: bool = True, ot_kwargs: dict | None = None, gated_grad: bool = True, return_indices: bool = True) -> torch.return_types.sort[torch.Tensor, torch.Tensor]
+  " href="#softtorch.sort"><code>softtorch.sort</code></a> to compute soft sorted values, then retrieves the quantile as a combination of the appropriate elements depending on the interpolation method. See <a class="autorefs autorefs-internal" title="            softtorch.sort(x: torch.Tensor, dim: int | None = -1, descending: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'fast_soft_sort', 'smooth_sort', 'sorting_network'] = 'neuralsort', standardize: bool = True, ot_kwargs: dict | None = None, gated_grad: bool = True, return_indices: bool = True) -> torch.return_types.sort[torch.Tensor, torch.Tensor]
+  " href="#softtorch.sort"><code>softtorch.sort</code></a> for method details.</p>
+<p><strong>Extra Arguments:</strong></p>
+<ul>
+<li><code>gated_grad</code>: If <code>False</code>, stops the gradient flow through the soft index. True gives gated 'SiLU-style' gradients, while False gives integrated 'Softplus-style' gradients.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Tensor of shape (..., {1}, ...) for scalar q, or (k, ..., {1}, ...) for vector q of length k (q dimension prepended). Represents the soft q-quantile of <code>x</code> along the specified dim.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.argmedian" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">argmedian</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ot&#39;</span><span class="p">,</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="s1">&#39;sorting_network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="n">standardize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ot_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L1100-L1124"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.argmedian" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes the soft argmedian of <code>x</code> along the specified dim.
+Implemented as <a class="autorefs autorefs-internal" title="            softtorch.argquantile(x: torch.Tensor, q: torch.Tensor | float, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'sorting_network'] = 'neuralsort', interpolation: Literal['linear', 'lower', 'higher', 'nearest', 'midpoint'] = 'linear', standardize: bool = True, ot_kwargs: dict | None = None) -> torch.Tensor
+  " href="#softtorch.argquantile"><code>softtorch.argquantile</code></a> with q=0.5, see respective documentation for details.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.median" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ot&#39;</span><span class="p">,</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="s1">&#39;fast_soft_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;sorting_network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="n">standardize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ot_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">gated_grad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">torch</span><span class="o">.</span><span class="n">return_types</span><span class="o">.</span><span class="n">median</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L1127-L1205"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.median" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.median.html">torch.median</a> of <code>x</code> along the specified dim.
+Implemented as <a class="autorefs autorefs-internal" title="            softtorch.quantile(x: torch.Tensor, q: torch.Tensor | float, dim: int | None = None, keepdim: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'fast_soft_sort', 'smooth_sort', 'sorting_network'] = 'neuralsort', interpolation: Literal['linear', 'lower', 'higher', 'nearest', 'midpoint'] = 'linear', standardize: bool = True, ot_kwargs: dict | None = None, return_argquantile: bool = False, gated_grad: bool = True) -> torch.Tensor
+  " href="#softtorch.quantile"><code>softtorch.quantile</code></a> with q=0.5, see respective documentation for details.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.argsort" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">descending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ot&#39;</span><span class="p">,</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="s1">&#39;sorting_network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="n">standardize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ot_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L480-L597"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.argsort" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.argsort.html">torch.argsort</a> of <code>x</code> along the specified dim.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of shape (..., n, ...).</li>
+<li><code>dim</code>: The dim along which to compute the argsort operation. If None, uses the last dimension.</li>
+<li><code>descending</code>: If True, sorts in descending order.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: Type of regularizer in the projection operators.<ul>
+<li><code>hard</code>: Returns the result of torch.argsort with a one-hot encoding of the indices.</li>
+<li><code>smooth</code>: Soften projections via an entropic regularizer.<ul>
+<li>For unit simplex projection (<code>softsort</code>/<code>neuralsort</code> methods), projection is computed in closed-form via a softmax operation.</li>
+<li>For optimal transport (<code>ot</code> method), transport plan is computed via Sinkhorn iterations (see <a href="https://arxiv.org/abs/1306.0895">Sinkhorn Distances: Lightspeed Computation of Optimal Transportation Distances</a>).</li>
+</ul>
+</li>
+<li><code>c0</code>: Soften projections via a quadratic regularizer.<ul>
+<li>For unit simplex projection (<code>softsort</code>/<code>neuralsort</code> methods), projection is computed in closed-form via the algorithm in <a href="https://arxiv.org/pdf/1309.1541">Projection onto the probability simplex: An eﬃcient algorithm with a simple proof, and an application</a>.</li>
+<li>For optimal transport (<code>ot</code> method), transport plan is computed via LBFGS (see <a href="https://arxiv.org/abs/1710.06276">Smooth and Sparse Optimal Transport</a>).</li>
+</ul>
+</li>
+<li><code>c1</code>/<code>c2</code>: C1 differentiable / C2 twice differentiable. Similar to <code>c0</code>, but using p-norm regularizers with p=3/2 and p=4/3, respectively.</li>
+</ul>
+</li>
+<li><code>method</code>: Method to compute the soft argsort. All approaches were originally proposed for the smooth mode, we extend them to the c0,c1,c2 modes as well.<ul>
+<li><code>ot</code>: Uses the approach in <a href="https://arxiv.org/pdf/1905.11885">Differentiable Ranks and Sorting using Optimal Transport</a>.
+    Intuition: The sorted elements are selected by specifying n "anchors" and then transporting the ith-largest value to the ith-largest anchor.
+    Note: <code>sinkhorn_max_iter</code> and <code>sinkhorn_tol</code> can be passed via <code>ot_kwargs</code> to control convergence.</li>
+<li><code>softsort</code>: Computes the "SoftSort" operator from <a href="https://arxiv.org/pdf/2006.16038">SoftSort: A Continuous Relaxation for the argsort Operator</a>.
+    Note: Can introduce gradient discontinuities when elements in <code>x</code> are not unique, but is much faster than OT-based method.</li>
+<li><code>neuralsort</code>: Computes the "NeuralSort" operator from <a href="https://arxiv.org/abs/1903.08850">Stochastic Optimization of Sorting Networks via Continuous Relaxations</a>.</li>
+</ul>
+</li>
+<li>
+<p><code>standardize</code>: If True, standardizes and squashes the input <code>x</code> along the specified dim before applying the softargsort operation. This can improve numerical stability and performance, especially when the values in <code>x</code> vary widely in scale.</p>
+</li>
+<li>
+<p><code>ot_kwargs</code>: Additional optional keyword arguments to pass to the OT projection operator, e.g., to control the number of max iterations or tolerance.</p>
+</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>A SoftIndex of shape (..., n, ..., [n]) (positive Tensor which sums to 1 over the last dimension).
+The elements in (..., i, ..., [n]) represent a distribution over values in x for the ith smallest element along the specified dim.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.sort" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">descending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ot&#39;</span><span class="p">,</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="s1">&#39;fast_soft_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;sorting_network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="n">standardize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ot_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">gated_grad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">return_types</span><span class="o">.</span><span class="n">sort</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L600-L714"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.sort" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.sort.html">torch.sort</a> of <code>x</code> along the specified dim.</p>
+<p>Most methods go through <a class="autorefs autorefs-internal" title="            softtorch.argsort(x: torch.Tensor, dim: int | None = -1, descending: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'sorting_network'] = 'neuralsort', standardize: bool = True, ot_kwargs: dict | None = None) -> torch.Tensor
+  " href="#softtorch.argsort"><code>softtorch.argsort</code></a> + <a class="autorefs autorefs-internal" title="            softtorch.take_along_dim(x: torch.Tensor, soft_index: torch.Tensor, dim: int | None = None) -> torch.Tensor
+  " href="#softtorch.take_along_dim"><code>softtorch.take_along_dim</code></a> to produce soft sorted values.
+The exceptions (<code>fast_soft_sort</code>, <code>smooth_sort</code>, <code>sorting_network</code>) bypass soft indices and compute values directly:</p>
+<ul>
+<li><code>fast_soft_sort</code>: permutahedron projection via PAV isotonic regression (<a href="https://arxiv.org/abs/2002.08871">Blondel et al., 2020</a>). In <code>smooth</code> mode, uses an entropic (log-KL) variant that is piecewise smooth but not C∞ (discontinuities at argsort chamber boundaries). The PAV step uses Numba JIT (CPU-only); GPU tensors are transferred to CPU for the forward pass.</li>
+<li><code>smooth_sort</code>: not available in SoftTorch, see <code>softjax.sort</code> for the SoftJAX-only implementation.</li>
+<li><code>sorting_network</code>: soft bitonic sorting network (<a href="https://arxiv.org/abs/2105.04019">Petersen et al., 2021</a>).</li>
+</ul>
+<p><strong>Extra Arguments:</strong></p>
+<ul>
+<li><code>gated_grad</code>: If <code>False</code>, stops the gradient flow through the soft index. True gives gated 'SiLU-style' gradients, while False gives integrated 'Softplus-style' gradients.</li>
+<li><code>return_indices</code>: If <code>False</code>, skips computation of the soft index (indices will be <code>None</code>). This avoids the O(n²) memory cost of materializing the n×n soft permutation matrix.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li>Namedtuple containing two fields:<ul>
+<li><code>values</code>: Soft sorted values of <code>x</code>, shape (..., n, ...).</li>
+<li><code>indices</code>: SoftIndex of shape (..., n, ..., [n]) (positive Tensor which sums
+    to 1 over the last dimension). Represents the soft indices of the sorted
+    values. <code>None</code> if <code>return_indices=False</code>, or when using <code>fast_soft_sort</code>
+    or <code>sorting_network</code> methods.</li>
+</ul>
+</li>
+</ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.topk" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ot&#39;</span><span class="p">,</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="s1">&#39;fast_soft_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;sorting_network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="n">standardize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ot_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">gated_grad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">return_types</span><span class="o">.</span><span class="n">topk</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L1350-L1445"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.topk" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.topk.html">torch.topk</a></p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of shape (..., n, ...).</li>
+<li><code>k</code>: The number of top elements to select.</li>
+<li><code>dim</code>: The dim along which to compute the topk operation. If dim is None, the last dimension of the input is chosen.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: Type of regularizer in the projection operators.<ul>
+<li><code>hard</code>: Returns the result of torch.topk with a one-hot encoding of the indices.</li>
+<li><code>smooth</code>: Soften projections via an entropic regularizer.<ul>
+<li>For unit simplex projection (<code>softsort</code>/<code>neuralsort</code> methods), projection is computed in closed-form via a softmax operation.</li>
+<li>For optimal transport (<code>ot</code> method), transport plan is computed via Sinkhorn iterations (see <a href="https://arxiv.org/abs/1306.0895">Sinkhorn Distances: Lightspeed Computation of Optimal Transportation Distances</a>).</li>
+</ul>
+</li>
+<li><code>c0</code>: Soften projections via a quadratic regularizer.<ul>
+<li>For unit simplex projection (<code>softsort</code>/<code>neuralsort</code> methods), projection is computed in closed-form via the algorithm in <a href="https://arxiv.org/pdf/1309.1541">Projection onto the probability simplex: An eﬃcient algorithm with a simple proof, and an application</a>.</li>
+<li>For optimal transport (<code>ot</code> method), transport plan is computed via LBFGS (see <a href="https://arxiv.org/abs/1710.06276">Smooth and Sparse Optimal Transport</a>).</li>
+</ul>
+</li>
+<li><code>c1</code>/<code>c2</code>: C1 differentiable / C2 twice differentiable. Similar to <code>c0</code>, but using p-norm regularizers with p=3/2 and p=4/3, respectively.</li>
+</ul>
+</li>
+<li><code>method</code>: Method to compute the soft topk. All approaches were originally proposed for the smooth mode, we extend them to the c0,c1,c2 modes as well.<ul>
+<li><code>ot</code>: Uses the approach in <a href="https://papers.nips.cc/paper/2020/file/ec24a54d62ce57ba93a531b460fa8d18-Paper.pdf">Differentiable Top-k with Optimal Transport</a>.
+    Intuition: The top-k elements are selected by specifying k+1 "anchors" and then transporting the top_k values to the top k anchors, and the remaining (n-k) values to the last anchor.
+    Note: <code>sinkhorn_max_iter</code> and <code>sinkhorn_tol</code> can be passed via <code>ot_kwargs</code> to control convergence.</li>
+<li><code>softsort</code>: Computes the top-k elements of the "SoftSort" operator from <a href="https://arxiv.org/pdf/2006.16038">SoftSort: A Continuous Relaxation for the argsort Operator</a>.
+    Note: Can introduce gradient discontinuities when elements in <code>x</code> are not unique, but is much faster than OT-based method.</li>
+<li><code>neuralsort</code>: Computes the top-k elements of the "NeuralSort" operator from <a href="https://arxiv.org/abs/1903.08850">Stochastic Optimization of Sorting Networks via Continuous Relaxations</a>.</li>
+<li><code>fast_soft_sort</code>: Uses the <code>FastSoftSort</code> operator from <a href="https://arxiv.org/abs/2002.08871">Fast Differentiable Sorting and Ranking</a> to directly compute the soft sorted values, via projection onto the permutahedron. The projection is solved via a PAV algorithm as proposed in <a href="https://arxiv.org/abs/2002.08871">Fast Differentiable Sorting and Ranking</a>. The top-k values are then retrieved by taking the first k values from the soft sorted output.
+    Note: This method does not return the soft indices, only the soft values. The PAV step uses Numba JIT (CPU-only); GPU tensors are transferred to CPU for the forward pass.</li>
+<li><code>sorting_network</code>: Uses a soft bitonic sorting network as proposed in <a href="https://arxiv.org/abs/2105.04019">Differentiable Sorting Networks for Scalable Sorting and Ranking Supervision</a>, replacing hard compare-and-swap with soft versions. The top-k values are retrieved by taking the first k values from the soft sorted output.
+    Note: This method does not return the soft indices, only the soft values.</li>
+</ul>
+</li>
+<li>
+<p><code>standardize</code>: If True, standardizes and squashes the input <code>x</code> along the specified dim before applying the softtopk operation. This can improve numerical stability and performance, especially when the values in <code>x</code> vary widely in scale.</p>
+</li>
+<li>
+<p><code>ot_kwargs</code>: Additional optional keyword arguments to pass to the OT projection operator, e.g., to control the number of max iterations or tolerance.</p>
+</li>
+<li><code>gated_grad</code>: If <code>False</code>, stops the gradient flow through the soft index. True gives gated 'SiLU-style' gradients, while False gives integrated 'Softplus-style' gradients.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li>Namedtuple containing two fields:<ul>
+<li><code>values</code>: Top-k values of <code>x</code>, shape (..., k, ...).</li>
+<li><code>indices</code>: SoftIndex of shape (..., k, ..., [n]) (positive Tensor which sums to 1 over the last dimension). Represents the soft indices of the top-k values.</li>
+</ul>
+</li>
+</ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.rank" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ot&#39;</span><span class="p">,</span> <span class="s1">&#39;softsort&#39;</span><span class="p">,</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="s1">&#39;fast_soft_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth_sort&#39;</span><span class="p">,</span> <span class="s1">&#39;sorting_network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;neuralsort&#39;</span><span class="p">,</span> <span class="n">descending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">standardize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ot_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L1448-L1603"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.rank" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes the soft rankings of <code>x</code> along the specified dim.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of shape (..., n, ...).</li>
+<li><code>dim</code>: The dim along which to compute the ranking operation. If None, the input
+    Tensor is flattened before computing the ranking.</li>
+<li><code>descending</code>: If True, larger inputs receive smaller ranks (best rank is 0). If
+    False, ranks increase with the input values.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: Type of regularizer in the projection operators.<ul>
+<li><code>hard</code>: Returns rank computed as two torch.argsort calls.</li>
+<li><code>smooth</code>: Soften projections via an entropic regularizer.<ul>
+<li>For unit simplex projection (<code>softsort</code>/<code>neuralsort</code> methods), projection is computed in closed-form via a softmax operation.</li>
+<li>For optimal transport (<code>ot</code> method), transport plan is computed via Sinkhorn iterations (see <a href="https://arxiv.org/abs/1306.0895">Sinkhorn Distances: Lightspeed Computation of Optimal Transportation Distances</a>).</li>
+</ul>
+</li>
+<li><code>c0</code>: Soften projections via a quadratic regularizer.<ul>
+<li>For unit simplex projection (<code>softsort</code>/<code>neuralsort</code> methods), projection is computed in closed-form via the algorithm in <a href="https://arxiv.org/pdf/1309.1541">Projection onto the probability simplex: An eﬃcient algorithm with a simple proof, and an application</a>.</li>
+<li>For optimal transport (<code>ot</code> method), transport plan is computed via LBFGS (see <a href="https://arxiv.org/abs/1710.06276">Smooth and Sparse Optimal Transport</a>).</li>
+</ul>
+</li>
+<li><code>c1</code>/<code>c2</code>: C1 differentiable / C2 twice differentiable. Similar to <code>c0</code>, but using p-norm regularizers with p=3/2 and p=4/3, respectively.</li>
+</ul>
+</li>
+<li><code>method</code>: Method to compute the soft rank. All approaches were originally proposed for the smooth mode, we extend them to the c0,c1,c2 modes as well.<ul>
+<li><code>ot</code>: Uses the approach in <a href="https://arxiv.org/pdf/1905.11885">Differentiable Ranks and Sorting using Optimal Transport</a>.
+    Intuition: Run an OT procedure as in <a class="autorefs autorefs-internal" title="            softtorch.argsort(x: torch.Tensor, dim: int | None = -1, descending: bool = False, softness: float = 0.1, mode: Literal['hard', 'smooth', 'c0', 'c1', 'c2'] = 'smooth', method: Literal['ot', 'softsort', 'neuralsort', 'sorting_network'] = 'neuralsort', standardize: bool = True, ot_kwargs: dict | None = None) -> torch.Tensor
+  " href="#softtorch.argsort"><code>softtorch.argsort</code></a>, then transport the sorted ranks (0, 1, ..., n-1) back to the ranks of the original values by using the transpose of the transport plan.
+    Note: <code>sinkhorn_max_iter</code> and <code>sinkhorn_tol</code> can be passed via <code>ot_kwargs</code> to control convergence.</li>
+<li><code>softsort</code>: Adapts the "SoftSort" operator from <a href="https://arxiv.org/pdf/2006.16038">SoftSort: A Continuous Relaxation for the argsort Operator</a> for rank by using a single <strong>column</strong>-wise projection instead of row-wise projection.
+    Note: Can introduce gradient discontinuities when elements in <code>x</code> are not unique, but is much faster than OT-based method.</li>
+<li><code>neuralsort</code>: Adapts the "NeuralSort" operator from <a href="https://arxiv.org/abs/1903.08850">Stochastic Optimization of Sorting Networks via Continuous Relaxations</a> for rank by renormalizing over columns after the row-wise projection.</li>
+<li><code>fast_soft_sort</code>: Uses the <code>FastSoftSort</code> operator from <a href="https://arxiv.org/abs/2002.08871">Fast Differentiable Sorting and Ranking</a> to directly compute the soft ranks, via projection onto the permutahedron. The projection is solved via a PAV algorithm as proposed in <a href="https://arxiv.org/abs/2002.08871">Fast Differentiable Sorting and Ranking</a>.
+    Note: The PAV step uses Numba JIT (CPU-only); GPU tensors are transferred to CPU for the forward pass.</li>
+</ul>
+</li>
+<li>
+<p><code>standardize</code>: If True, standardizes and squashes the input <code>x</code> along the specified dim before applying the softrank operation. This can improve numerical stability and performance, especially when the values in <code>x</code> vary widely in scale.</p>
+</li>
+<li>
+<p><code>ot_kwargs</code>: Additional optional keyword arguments to pass to the OT projection operator, e.g., to control the number of max iterations or tolerance.</p>
+</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>A positive Tensor of shape (..., n, ...) with values in [1, n].
+The elements in (..., i, ...) represent the soft rank of the ith element along the specified dim.</p>
+
+
+    </div>
+
+</div><h2 id="comparison-operators">Comparison operators<a class="headerlink" href="#comparison-operators" title="Permanent link">¤</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.greater" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L2016-L2044"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.greater" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes a soft approximation to elementwise <code>x &gt; y</code>.
+Uses a Heaviside relaxation so the output approaches 0 at equality.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: First input Tensor.</li>
+<li><code>y</code>: Second input Tensor, same shape as <code>x</code>.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: If "hard", returns the exact comparison. Otherwise uses a soft Heaviside.</li>
+<li><code>epsilon</code>: Small offset so that as softness-&gt;0, greater returns 0 at equality.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>SoftBool of same shape as <code>x</code> and <code>y</code> (Tensor with values in [0, 1]), relaxing the elementwise <code>x &gt; y</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.greater_equal" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L2047-L2075"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.greater_equal" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes a soft approximation to elementwise <code>x &gt;= y</code>.
+Uses a Heaviside relaxation so the output approaches 1 at equality.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: First input Tensor.</li>
+<li><code>y</code>: Second input Tensor, same shape as <code>x</code>.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: If "hard", returns the exact comparison. Otherwise uses a soft Heaviside.</li>
+<li><code>epsilon</code>: Small offset so that as softness-&gt;0, greater_equal returns 1 at equality.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>SoftBool of same shape as <code>x</code> and <code>y</code> (Tensor with values in [0, 1]), relaxing the elementwise <code>x &gt;= y</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.less" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L2078-L2108"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.less" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes a soft approximation to elementwise <code>x &lt; y</code>.
+Uses a Heaviside relaxation so the output approaches 0 at equality.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: First input Tensor.</li>
+<li><code>y</code>: Second input Tensor, same shape as <code>x</code>.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: If "hard", returns the exact comparison. Otherwise uses a soft Heaviside ("smooth", "c0", "c1", or "c2"). Defaults to "smooth".</li>
+<li><code>epsilon</code>: Small offset so that as softness-&gt;0, less returns 0 at equality.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>SoftBool of same shape as <code>x</code> and <code>y</code> (Tensor with values in [0, 1]), relaxing the elementwise <code>x &lt; y</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.less_equal" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L2111-L2139"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.less_equal" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes a soft approximation to elementwise <code>x &lt;= y</code>.
+Uses a Heaviside relaxation so the output approaches 1 at equality.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: First input Tensor.</li>
+<li><code>y</code>: Second input Tensor, same shape as <code>x</code>.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: If "hard", returns the exact comparison. Otherwise uses a soft Heaviside.</li>
+<li><code>epsilon</code>: Small offset so that as softness-&gt;0, less_equal returns 1 at equality.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>SoftBool of same shape as <code>x</code> and <code>y</code> (Tensor with values in [0, 1]), relaxing the elementwise <code>x &lt;= y</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.eq" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L2142-L2175"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.eq" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes a soft approximation to elementwise <code>x == y</code>.
+Implemented as a soft <code>abs(x - y) &lt;= 0</code> comparison.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: First input Tensor.</li>
+<li><code>y</code>: Second input Tensor, same shape as <code>x</code>.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: If "hard", returns the exact comparison. Otherwise uses a soft Heaviside.</li>
+<li><code>epsilon</code>: Small offset so that as softness-&gt;0, eq returns 1 at equality.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>SoftBool of same shape as <code>x</code> and <code>y</code> (Tensor with values in [0, 1]), relaxing the elementwise <code>x == y</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.not_equal" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">not_equal</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L2178-L2212"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.not_equal" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes a soft approximation to elementwise <code>x != y</code>.
+Implemented as a soft <code>abs(x - y) &gt; 0</code> comparison.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: First input Tensor.</li>
+<li><code>y</code>: Second input Tensor, same shape as <code>x</code>.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>mode</code>: If "hard", returns the exact comparison. Otherwise uses a soft Heaviside.</li>
+<li><code>epsilon</code>: Small offset so that as softness-&gt;0, not_equal returns 0 at equality.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>SoftBool of same shape as <code>x</code> and <code>y</code> (Tensor with values in [0, 1]), relaxing the elementwise <code>x != y</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.isclose" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">softness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hard&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;c0&#39;</span><span class="p">,</span> <span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smooth&#39;</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L2215-L2257"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.isclose" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes a soft approximation to <code>torch.isclose</code> for elementwise comparison.
+Implemented as a soft <code>abs(x - y) &lt;= atol + rtol * abs(y)</code> comparison.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: First input Tensor.</li>
+<li><code>y</code>: Second input Tensor, same shape as <code>x</code>.</li>
+<li><code>softness</code>: Softness of the function, should be larger than zero.</li>
+<li><code>rtol</code>: Relative tolerance. Defaults to 1e-5.</li>
+<li><code>atol</code>: Absolute tolerance. Defaults to 1e-8.</li>
+<li><code>mode</code>: If "hard", returns the exact comparison. Otherwise uses a soft Heaviside.</li>
+<li><code>epsilon</code>: Small offset so that as softness-&gt;0, isclose returns 1 at equality.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>SoftBool of same shape as <code>x</code> and <code>y</code> (Tensor with values in [0, 1]), relaxing the elementwise <code>isclose(x, y)</code>.</p>
+
+
+    </div>
+
+</div><h2 id="logical-operators">Logical operators<a class="headerlink" href="#logical-operators" title="Permanent link">¤</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.logical_and" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">use_geometric_mean</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L2319-L2335"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.logical_and" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes soft elementwise logical AND between two SoftBool Tensors.
+Fuzzy logic implemented as <code>all(stack([x, y], dim=-1), dim=-1)</code>.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: First SoftBool input Tensor.</li>
+<li><code>y</code>: Second SoftBool input Tensor.</li>
+<li><code>use_geometric_mean</code>: If True, uses the geometric mean to compute the soft AND. Otherwise, the product is used.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>SoftBool of same shape as <code>x</code> and <code>y</code> (Tensor with values in [0, 1]), relaxing the elementwise logical AND.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.logical_not" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L2263-L2274"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.logical_not" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes soft elementwise logical NOT of a SoftBool Tensor.
+Fuzzy logic implemented as <code>1.0 - x</code>.</p>
+<p><strong>Arguments:</strong>
+- <code>x</code>: SoftBool input Tensor.</p>
+<p><strong>Returns:</strong></p>
+<p>SoftBool of same shape as <code>x</code> (Tensor with values in [0, 1]), relaxing the elementwise logical NOT.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.logical_or" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">use_geometric_mean</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L2338-L2353"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.logical_or" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes soft elementwise logical OR between two SoftBool Tensors.
+Fuzzy logic implemented as <code>any(stack([x, y], dim=-1), dim=-1)</code>.</p>
+<p><strong>Arguments:</strong>
+- <code>x</code>: First SoftBool input Tensor.
+- <code>y</code>: Second SoftBool input Tensor.
+- <code>use_geometric_mean</code>: If True, uses the geometric mean to compute the soft AND inside the logical NOT. Otherwise, the product is used.</p>
+<p><strong>Returns:</strong></p>
+<p>SoftBool of same shape as <code>x</code> and <code>y</code> (Tensor with values in [0, 1]), relaxing the elementwise logical OR.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.logical_xor" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">logical_xor</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">use_geometric_mean</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L2356-L2370"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.logical_xor" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes soft elementwise logical XOR between two SoftBool Tensors.</p>
+<p><strong>Arguments:</strong>
+- <code>x</code>: First SoftBool input Tensor.
+- <code>y</code>: Second SoftBool input Tensor.
+- <code>use_geometric_mean</code>: If True, uses the geometric mean to compute the soft ANDs inside the logical OR. Otherwise, the product is used.</p>
+<p><strong>Returns:</strong></p>
+<p>SoftBool of same shape as <code>x</code> and <code>y</code> (Tensor with values in [0, 1]), relaxing the elementwise logical XOR.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.all" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">use_geometric_mean</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L2277-L2297"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.all" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes soft elementwise logical AND across a specified dim.
+Fuzzy logic implemented as the geometric mean along the dim.</p>
+<p><strong>Arguments:</strong>
+- <code>x</code>: SoftBool input Tensor.
+- <code>dim</code>: Axis along which to compute the logical AND. Default is -1 (last dim).
+- <code>epsilon</code>: Minimum value for numerical stability inside the log.
+- <code>use_geometric_mean</code>: If True, uses the geometric mean to compute the soft AND. Otherwise, the product is used.</p>
+<p><strong>Returns:</strong></p>
+<p>SoftBool (Tensor with values in [0, 1]) with the specified dim reduced, relaxing
+the logical ALL along that dim.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.any" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">use_geometric_mean</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L2300-L2316"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.any" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes soft elementwise logical OR across a specified dim.
+Fuzzy logic implemented as <code>1.0 - all(logical_not(x), dim=dim)</code>.</p>
+<p><strong>Arguments:</strong>
+- <code>x</code>: SoftBool input Tensor.
+- <code>dim</code>: Axis along which to compute the logical OR. Default is -1 (last dim).
+- <code>use_geometric_mean</code>: If True, uses the geometric mean to compute the soft AND inside the logical NOT. Otherwise, the product is used.</p>
+<p><strong>Returns:</strong></p>
+<p>SoftBool (Tensor with values in [0, 1]) with the specified dim reduced, relaxing
+the logical ANY along that dim.</p>
+
+
+    </div>
+
+</div><h2 id="selection-operators">Selection operators<a class="headerlink" href="#selection-operators" title="Permanent link">¤</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.where" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L34-L46"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.where" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Computes a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.where.html">torch.where</a> as <code>x * condition + y * (1.0 - condition)</code>.</p>
+<p><strong>Arguments:</strong>
+- <code>condition</code>: SoftBool condition Tensor, same shape as <code>x</code> and <code>y</code>.
+- <code>x</code>: First input Tensor, same shape as <code>condition</code>.
+- <code>y</code>: Second input Tensor, same shape as <code>condition</code>.</p>
+<p><strong>Returns:</strong></p>
+<p>Tensor of the same shape as <code>x</code> and <code>y</code>, interpolating between <code>x</code> and <code>y</code> according to <code>condition</code> in [0, 1].</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.take_along_dim" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">take_along_dim</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">soft_index</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L49-L81"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.take_along_dim" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.take_along_dim.html">torch.take_along_dim</a> via a weighted dot product.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of shape (..., n, ...).</li>
+<li><code>soft_index</code>: A SoftIndex of shape (..., k, ..., [n]) (positive Tensor which sums to 1 over the last dimension). If dim is None, must be two-dimensional. If dim is not None, must have x.ndim + 1 == soft_index.ndim, and x must be broadcast-compatible with soft_index along dimensions other than dim.</li>
+<li><code>dim</code>: Dim along which to apply the soft index. If None, the input is flattened before applying the soft indices.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Tensor of shape (..., k, ...), representing the result after soft selection along the specified dim.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.take" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">soft_index</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L84-L117"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.take" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.take.html">torch.take</a> via a weighted dot product.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of shape (..., n, ...).</li>
+<li><code>soft_index</code>: A SoftIndex of shape (k, [n]) (positive Tensor which sums to 1 over the last dimension).</li>
+<li><code>dim</code>: Dim along which to apply the soft index. If None, the input is flattened before applying the soft indices.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Tensor of shape (..., k, ...) after soft selection.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.index_select" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">soft_index</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">keepdim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L120-L151"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.index_select" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.index_select.html">torch.index_select</a> via a weighted dot product.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of shape (..., n, ...).</li>
+<li><code>soft_index</code>: A SoftIndex of shape ([n],) (positive Tensor which sums to 1 over the last dimension).</li>
+<li><code>dim</code>: Dim along which to apply the soft index.</li>
+<li><code>keepdim</code>: If True, keeps the reduced dimension as a singleton {1}.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Tensor after soft indexing, shape (..., {1}, ...).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="softtorch.narrow" class="doc doc-heading">
+  <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">softtorch</span><span class="o">.</span><span class="n">narrow</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">soft_start</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  <a href="https://github.com/a-paulus/softtorch/blob/05a034b3f6a4bebc718513860b4b8a36a1c32a38/src/softtorch/functions.py#L154-L195"><code class='hippogriffe-repo-url'></code></a>
+
+
+<a href="#softtorch.narrow" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Performs a soft version of <a href="https://pytorch.org/docs/stable/generated/torch.narrow.html">torch.narrow</a> via a weighted dot product.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>x</code>: Input Tensor of shape (..., n, ...).</li>
+<li><code>soft_start</code>: A SoftIndex of shape ([n],) (positive Tensor which sums to 1 over the last dimension).</li>
+<li><code>length</code>: Length of the slice to extract.</li>
+<li><code>dim</code>: Dim along which to apply the soft slice.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Tensor of shape (..., length, ...) after soft slicing.</p>
+
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "toc.integrate", "header.autohide"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../_static/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
