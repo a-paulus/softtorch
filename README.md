@@ -2,7 +2,7 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/_static/logo/softtorch_logo_white_transparent.png">
     <source media="(prefers-color-scheme: light)" srcset="docs/_static/logo/softtorch_logo_black_transparent.png">
-    <img alt="SoftTorch logo" src="docs/_static/logo/softtorch_logo_black_transparent.png" style="width:60%; max-width:320px; height:auto;">
+    <img alt="SoftTorch logo" src="https://raw.githubusercontent.com/a-paulus/softtorch/main/docs/_static/logo/softtorch_logo_black_transparent.png" style="width:60%; max-width:320px; height:auto;">
   </picture>
 </p>
 
@@ -11,6 +11,8 @@
 [![PyPI version](https://img.shields.io/pypi/v/softtorch)](https://pypi.org/project/softtorch/)
 [![Python version](https://img.shields.io/pypi/pyversions/softtorch)](https://pypi.org/project/softtorch/)
 [![License](https://img.shields.io/pypi/l/softtorch)](https://github.com/a-paulus/softtorch/blob/main/LICENSE)
+
+Looking for JAX? See [SoftJAX](https://github.com/a-paulus/softjax).
 
 ## In a nutshell
 
