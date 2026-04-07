@@ -1440,8 +1440,10 @@ def topk(
             ot_kwargs=ot_kwargs,
         )  # (..., k, ..., [n])
         if not gated_grad:
-            soft_index = soft_index.detach()
-        values = take_along_dim(x, soft_index, dim=dim)  # (..., k, ...)
+            soft_index_tmp = soft_index.detach()
+        else:
+            soft_index_tmp = soft_index
+        values = take_along_dim(x, soft_index_tmp, dim=dim)  # (..., k, ...)
     return torch.return_types.topk((values, soft_index))
 
 
