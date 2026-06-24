@@ -214,7 +214,7 @@ def _proj_unit_simplex_pnorm_q4(values: torch.Tensor) -> torch.Tensor:
 def _proj_simplex(
     x: torch.Tensor,  # (..., n, ...)
     dim: int,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["smooth", "c0", "c1", "c2"] = "smooth",
 ) -> torch.Tensor:  # (..., [n], ...)
     """Projects `x` onto the unit simplex along the specified dim.

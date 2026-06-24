@@ -722,7 +722,7 @@ def _proj_permutahedron_entropic(z: torch.Tensor, w: torch.Tensor) -> torch.Tens
 def _proj_permutahedron(
     z: torch.Tensor,  # (..., n)
     w: torch.Tensor,  # (..., n)
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["smooth", "c0", "c1", "c2"] = "smooth",
 ) -> torch.Tensor:  # (..., n)
     """Projects `z` onto the permutahedron of `w`.
