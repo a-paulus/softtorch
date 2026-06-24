@@ -1638,8 +1638,10 @@ def sigmoidal(
         x = x / 5.0
         if mode == "c0":  # continuous
             # closed form of argmax([0,x], softness=5*softness, mode="c0", standardize=False)[1]
+            # The leading zero is a no-op term that keeps the graph alive for
+            # higher-order derivatives.
             y = _polyval(
-                torch.tensor([0.5, 0.5], device=x.device, dtype=x.dtype), x
+                torch.tensor([0.0, 0.5, 0.5], device=x.device, dtype=x.dtype), x
             )
             y = torch.where(
                 x < -1.0,
