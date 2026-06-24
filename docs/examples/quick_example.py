@@ -1,6 +1,10 @@
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import torch
+
 import softtorch as st
+
 
 torch.set_printoptions(precision=4, sci_mode=False)
 torch.set_default_dtype(torch.float64)
@@ -60,7 +64,12 @@ def feature_selection_loss(g, X, y, w_model, mode="smooth"):
 g = torch.zeros(n_features, requires_grad=True)
 print("\n=== 2. Top-k feature selection ===")
 hard_loss = feature_selection_loss(g, X, y, w_model, mode="hard")
-print("Hard grad:", torch.autograd.grad(hard_loss, g)[0] if hard_loss.requires_grad else torch.zeros_like(g))
+print(
+    "Hard grad:",
+    torch.autograd.grad(hard_loss, g)[0]
+    if hard_loss.requires_grad
+    else torch.zeros_like(g),
+)
 soft_loss = feature_selection_loss(g, X, y, w_model, mode="smooth")
 print("Soft grad:", torch.autograd.grad(soft_loss, g)[0])
 
@@ -90,7 +99,12 @@ def filter_loss(t, x, target, mode="smooth"):
 t = torch.tensor(0.0, requires_grad=True)
 print("\n=== 3. Differentiable threshold filtering ===")
 hard_loss = filter_loss(t, x_filt, target_sum, mode="hard")
-print("Hard grad:", torch.autograd.grad(hard_loss, t)[0] if hard_loss.requires_grad else torch.zeros_like(t))
+print(
+    "Hard grad:",
+    torch.autograd.grad(hard_loss, t)[0]
+    if hard_loss.requires_grad
+    else torch.zeros_like(t),
+)
 soft_loss = filter_loss(t, x_filt, target_sum, mode="smooth")
 print("Soft grad:", torch.autograd.grad(soft_loss, t)[0])
 
@@ -108,14 +122,29 @@ print("Learned threshold:", t)
 # 4. Differentiable rule-based classifier
 # Learn decision boundaries: classify positive if ANY feature is in [lo, hi].
 # The rule is true if any element of a feature is inside `[lo, hi]`.
-x_rules = torch.tensor([[0.2, 0.8], [0.5, 0.3], [0.9, 0.1], [0.4, 0.7],
-                         [0.1, 0.4], [0.2, 0.7], [0.4, 0.1], [0.4, 0.7],
-                         [0.7, 0.29], [0.3, 0.3], [0.61, 0.25], [0.4, 0.6],
-                         [0.0, 0.1], [0.5, 0.3], [0.4, 0.9], [0.1, 0.57]])
-labels = torch.tensor([0.0, 1.0, 0.0, 1.0,
-                        1.0, 0.0, 1.0, 1.0,
-                        0.0, 1.0, 0.0, 1.0,
-                        0.0, 1.0, 1.0, 1.0])
+x_rules = torch.tensor(
+    [
+        [0.2, 0.8],
+        [0.5, 0.3],
+        [0.9, 0.1],
+        [0.4, 0.7],
+        [0.1, 0.4],
+        [0.2, 0.7],
+        [0.4, 0.1],
+        [0.4, 0.7],
+        [0.7, 0.29],
+        [0.3, 0.3],
+        [0.61, 0.25],
+        [0.4, 0.6],
+        [0.0, 0.1],
+        [0.5, 0.3],
+        [0.4, 0.9],
+        [0.1, 0.57],
+    ]
+)
+labels = torch.tensor(
+    [0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0]
+)
 
 
 @st.st
@@ -131,7 +160,12 @@ def rule_loss(params, x, labels, mode="smooth"):
 params = torch.tensor([0.0, 1.0], requires_grad=True)
 print("\n=== 4. Differentiable rule-based classifier ===")
 hard_loss = rule_loss(params, x_rules, labels, mode="hard")
-print("Hard grad:", torch.autograd.grad(hard_loss, params)[0] if hard_loss.requires_grad else torch.zeros_like(params))
+print(
+    "Hard grad:",
+    torch.autograd.grad(hard_loss, params)[0]
+    if hard_loss.requires_grad
+    else torch.zeros_like(params),
+)
 soft_loss = rule_loss(params, x_rules, labels, mode="smooth")
 print("Soft grad:", torch.autograd.grad(soft_loss, params)[0])
 
@@ -147,7 +181,16 @@ print("Learned [lo, hi]:", params)
 
 
 # ── Plot ─────────────────────────────────────────────────────────────────────
-palette = ["#00bfff", "#e7a1e5", "#6dd1ac", "#e1be6a", "#368f80", "#889fd9", "#f4836d", "#cecece"]
+palette = [
+    "#00bfff",
+    "#e7a1e5",
+    "#6dd1ac",
+    "#e1be6a",
+    "#368f80",
+    "#889fd9",
+    "#f4836d",
+    "#cecece",
+]
 informative = {i for i, v in enumerate(w_model) if v != 0}
 
 fig, axes = plt.subplots(1, 4, figsize=(8, 2.5))
@@ -197,4 +240,8 @@ axes[3].set_title("Rule classifier", fontsize=8)
 axes[3].legend(fontsize=6)
 
 fig.tight_layout()
-fig.savefig("docs/examples/quick_example_optimization.svg", bbox_inches="tight", transparent=True)
+svg_path = Path("docs/examples/quick_example_optimization.svg")
+fig.savefig(svg_path, bbox_inches="tight", transparent=True)
+svg_path.write_text(
+    "\n".join(line.rstrip() for line in svg_path.read_text().splitlines()) + "\n"
+)

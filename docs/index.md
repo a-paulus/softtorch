@@ -176,19 +176,7 @@ Learned [lo, hi]: tensor([0.2925, 0.5999])
 
 ## Citation
 
-If this library helped your academic work, please consider citing: ([arXiv link](https://arxiv.org/abs/2603.08824))
-
-```bibtex
-@article{paulus2026softjax,
-  title={{SoftJAX} \& {SoftTorch}: Empowering Automatic Differentiation Libraries with Informative Gradients},
-  author={Paulus, Anselm and Geist, A.\ Ren\'e and Musil, V\'it and Hoffmann, Sebastian and Beker, Onur and Martius, Georg},
-  journal={arXiv preprint},
-  year={2026},
-  eprint={2603.08824}
-}
-```
-
-(Also consider starring the project [on GitHub](https://github.com/a-paulus/softtorch))
+--8<-- ".citation.md"
 
 Special thanks and credit go to [Patrick Kidger](https://kidger.site) for the awesome [JAX repositories](https://github.com/patrick-kidger) that served as the basis for the documentation of this project.
 
