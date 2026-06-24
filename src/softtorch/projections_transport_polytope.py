@@ -44,7 +44,7 @@ def _proj_transport_polytope_entropic(
     @torchopt.diff.implicit.custom_root(
         optimality_fn,
         argnums=1,
-        solve=torchopt.linear_solve.solve_normal_cg(maxiter=5, atol=0),
+        solve=torchopt.linear_solve.solve_normal_cg(maxiter=50, atol=0),
     )
     def solve(opt_params_init, C, mu, nu, epsilon):
         # Forward: Sinkhorn in log-domain (numerically stable for small epsilon).
@@ -115,9 +115,16 @@ def _proj_transport_polytope_pnorm_lbfgs(
     @torchopt.diff.implicit.custom_root(
         optimality_fn,
         argnums=1,
-        solve=torchopt.linear_solve.solve_normal_cg(maxiter=5, atol=0),
+        solve=torchopt.linear_solve.solve_normal_cg(maxiter=50, atol=0),
     )
     def solve(opt_params_init, C, mu, nu, lam_pow, q):
+        # Implicit diff handles gradients w.r.t. C via the optimality
+        # conditions. The forward LBFGS closure can use detached inputs so
+        # .backward() does not traverse the outer graph under create_graph=True.
+        C_d = C.detach()
+        mu_d = mu.detach()
+        nu_d = nu.detach()
+
         f = opt_params_init[0].detach().clone().requires_grad_(True)
         g_rest = opt_params_init[1].detach().clone().requires_grad_(True)
 
@@ -129,7 +136,7 @@ def _proj_transport_polytope_pnorm_lbfgs(
             line_search_fn="strong_wolfe",
         )
 
-        old_loss = torch.tensor(float("inf"), dtype=C.dtype, device=C.device)
+        old_loss = torch.tensor(float("inf"), dtype=C_d.dtype, device=C_d.device)
 
         for _ in range(max_iter):
             old_f = f.data.clone()
@@ -137,12 +144,14 @@ def _proj_transport_polytope_pnorm_lbfgs(
 
             def closure():
                 optimizer.zero_grad()
-                g = torch.cat([torch.zeros(1, dtype=C.dtype, device=C.device), g_rest])
-                S = f[:, None] + g[None, :] - C
+                g = torch.cat(
+                    [torch.zeros(1, dtype=C_d.dtype, device=C_d.device), g_rest]
+                )
+                S = f[:, None] + g[None, :] - C_d
                 P = torch.clamp(S, min=0.0)
                 dual = (
-                    torch.dot(mu, f)
-                    + torch.dot(nu, g)
+                    torch.dot(mu_d, f)
+                    + torch.dot(nu_d, g)
                     - (lam_pow / q) * torch.sum(P**q)
                 )
                 neg_dual = -dual
