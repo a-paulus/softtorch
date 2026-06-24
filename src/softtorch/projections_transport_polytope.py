@@ -9,6 +9,14 @@ import torchopt
 from softtorch.utils import _validate_softness
 
 
+def _raise_if_learnable_softness(softness: float | torch.Tensor) -> None:
+    if isinstance(softness, torch.Tensor) and softness.requires_grad:
+        raise ValueError(
+            "learnable tensor softness is not supported for OT projections; "
+            "pass a float or detach the tensor"
+        )
+
+
 def _proj_transport_polytope_entropic(
     C: torch.Tensor,  # (n, m)
     mu: torch.Tensor,  # (n,)
@@ -30,6 +38,7 @@ def _proj_transport_polytope_entropic(
     nu = nu / nu.sum()
 
     n, m = C.shape
+    _raise_if_learnable_softness(epsilon)
     epsilon = float(epsilon)
 
     def optimality_fn(opt_params, C, mu, nu, epsilon):
@@ -193,7 +202,7 @@ def _proj_transport_polytope(
     cost: torch.Tensor,  # (..., n, m)
     mu: torch.Tensor,  # ([n],)
     nu: torch.Tensor,  # ([m],)
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["smooth", "c0", "c1", "c2"] = "smooth",
     sinkhorn_tol: float = 1e-5,
     sinkhorn_max_iter: int = 10000,
@@ -224,6 +233,7 @@ def _proj_transport_polytope(
             )
 
     elif mode in ("c0", "c1", "c2"):
+        _raise_if_learnable_softness(softness)
         if mode == "c0":
             # Curvature of (1/2)||y||^2 at transport polytope center: R''=1
             p = 2.0

@@ -3,8 +3,16 @@ from typing import Literal
 import torch
 
 
-def _validate_softness(softness: float) -> None:
-    """Raise ValueError if softness is not positive."""
+def _validate_softness(softness: float | torch.Tensor) -> None:
+    """Raise ValueError if softness is not a positive scalar."""
+    if isinstance(softness, torch.Tensor):
+        if softness.ndim != 0:
+            raise ValueError(
+                f"softness must be a scalar, got tensor with shape {tuple(softness.shape)}"
+            )
+        if softness.detach() <= 0:
+            raise ValueError(f"softness must be positive, got {softness}")
+        return
     if softness <= 0:
         raise ValueError(f"softness must be positive, got {softness}")
 

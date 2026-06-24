@@ -202,7 +202,7 @@ def argmax(
     x: torch.Tensor,  # (..., n, ...)
     dim: int | None = None,
     keepdim: bool = False,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["hard", "smooth", "c0", "c1", "c2"] = "smooth",
     method: Literal["ot", "softsort", "neuralsort", "sorting_network"] = "softsort",
     standardize: bool = True,
@@ -315,7 +315,7 @@ def max(
     x: torch.Tensor,  # (..., n, ...)
     dim: int | None = None,
     keepdim: bool = False,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["hard", "smooth", "c0", "c1", "c2"] = "smooth",
     method: Literal[
         "ot", "softsort", "neuralsort", "fast_soft_sort", "smooth_sort", "sorting_network"
@@ -411,7 +411,7 @@ def argmin(
     x: torch.Tensor,  # (..., n, ...)
     dim: int | None = None,
     keepdim: bool = False,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["hard", "smooth", "c0", "c1", "c2"] = "smooth",
     method: Literal["ot", "softsort", "neuralsort", "sorting_network"] = "softsort",
     standardize: bool = True,
@@ -436,7 +436,7 @@ def min(
     x: torch.Tensor,  # (..., n, ...)
     dim: int | None = None,
     keepdim: bool = False,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["hard", "smooth", "c0", "c1", "c2"] = "smooth",
     method: Literal[
         "ot", "softsort", "neuralsort", "fast_soft_sort", "smooth_sort", "sorting_network"
@@ -481,7 +481,7 @@ def argsort(
     x: torch.Tensor,  # (..., n, ...)
     dim: int | None = -1,
     descending: bool = False,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["hard", "smooth", "c0", "c1", "c2"] = "smooth",
     method: Literal["ot", "softsort", "neuralsort", "sorting_network"] = "neuralsort",
     standardize: bool = True,
@@ -601,7 +601,7 @@ def sort(
     x: torch.Tensor,  # (..., n, ...)
     dim: int | None = -1,
     descending: bool = False,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["hard", "smooth", "c0", "c1", "c2"] = "smooth",
     method: Literal[
         "ot", "softsort", "neuralsort", "fast_soft_sort", "smooth_sort", "sorting_network"
@@ -719,7 +719,7 @@ def argquantile(
     q: torch.Tensor | float,  # scalar or (k,)
     dim: int | None = None,
     keepdim: bool = False,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["hard", "smooth", "c0", "c1", "c2"] = "smooth",
     method: Literal["ot", "softsort", "neuralsort", "sorting_network"] = "neuralsort",
     interpolation: Literal[
@@ -960,7 +960,7 @@ def quantile(
     q: torch.Tensor | float,  # quantile in [0, 1]
     dim: int | None = None,
     keepdim: bool = False,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["hard", "smooth", "c0", "c1", "c2"] = "smooth",
     method: Literal[
         "ot", "softsort", "neuralsort", "fast_soft_sort", "smooth_sort", "sorting_network"
@@ -1101,7 +1101,7 @@ def argmedian(
     x: torch.Tensor,  # (..., n, ...)
     dim: int | None = None,
     keepdim: bool = False,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["hard", "smooth", "c0", "c1", "c2"] = "smooth",
     method: Literal["ot", "softsort", "neuralsort", "sorting_network"] = "neuralsort",
     standardize: bool = True,
@@ -1128,7 +1128,7 @@ def median(
     x: torch.Tensor,  # (..., n, ...)
     dim: int | None = None,
     keepdim: bool = False,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["hard", "smooth", "c0", "c1", "c2"] = "smooth",
     method: Literal[
         "ot", "softsort", "neuralsort", "fast_soft_sort", "smooth_sort", "sorting_network"
@@ -1209,7 +1209,7 @@ def _argtopk(
     x: torch.Tensor,  # (..., n, ...)
     k: int,
     dim: int | None = None,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["hard", "smooth", "c0", "c1", "c2"] = "smooth",
     method: Literal["ot", "softsort", "neuralsort", "sorting_network"] = "neuralsort",
     standardize: bool = True,
@@ -1351,7 +1351,7 @@ def topk(
     x: torch.Tensor,  # (..., n, ...)
     k: int,
     dim: int | None = None,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["hard", "smooth", "c0", "c1", "c2"] = "smooth",
     method: Literal[
         "ot", "softsort", "neuralsort", "fast_soft_sort", "smooth_sort", "sorting_network"
@@ -1450,7 +1450,7 @@ def topk(
 def rank(
     x: torch.Tensor,  # (..., n, ...)
     dim: int | None = None,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["hard", "smooth", "c0", "c1", "c2"] = "smooth",
     method: Literal["ot", "softsort", "neuralsort", "fast_soft_sort", "smooth_sort", "sorting_network"] = "neuralsort",
     descending: bool = True,
@@ -1610,7 +1610,7 @@ def rank(
 
 def sigmoidal(
     x: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["smooth", "c0", "c1", "_c1_pnorm", "c2", "_c2_pnorm"] = "smooth",
 ) -> SoftBool:
     """Sigmoidal functions defining a characteristic S-shaped curve.
@@ -1719,7 +1719,7 @@ def sigmoidal(
 
 def softrelu(
     x: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal["smooth", "c0", "c1", "_c1_pnorm", "c2", "_c2_pnorm"] = "smooth",
     gated: bool = False,
 ) -> torch.Tensor:
@@ -1839,7 +1839,7 @@ def softrelu(
 
 def heaviside(
     x: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal[
         "hard", "smooth", "c0", "c1", "c2"
     ] = "smooth",
@@ -1865,7 +1865,7 @@ def heaviside(
 
 def round(
     x: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal[
         "hard", "smooth", "c0", "c1", "c2"
     ] = "smooth",
@@ -1902,7 +1902,7 @@ def round(
 
 def sign(
     x: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal[
         "hard", "smooth", "c0", "c1", "c2"
     ] = "smooth",
@@ -1928,7 +1928,7 @@ def sign(
 
 def abs(
     x: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal[
         "hard", "smooth", "c0", "c1", "c2"
     ] = "smooth",
@@ -1954,7 +1954,7 @@ def abs(
 
 def relu(
     x: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal[
         "hard", "smooth", "c0", "c1", "c2"
     ] = "smooth",
@@ -1984,7 +1984,7 @@ def clamp(
     x: torch.Tensor,
     a: torch.Tensor,
     b: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal[
         "hard", "smooth", "c0", "c1", "c2"
     ] = "smooth",
@@ -2020,7 +2020,7 @@ def clamp(
 def greater(
     x: torch.Tensor,
     y: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal[
         "hard", "smooth", "c0", "c1", "c2"
     ] = "smooth",
@@ -2051,7 +2051,7 @@ def greater(
 def greater_equal(
     x: torch.Tensor,
     y: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal[
         "hard", "smooth", "c0", "c1", "c2"
     ] = "smooth",
@@ -2082,7 +2082,7 @@ def greater_equal(
 def less(
     x: torch.Tensor,
     y: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal[
         "hard", "smooth", "c0", "c1", "c2"
     ] = "smooth",
@@ -2115,7 +2115,7 @@ def less(
 def less_equal(
     x: torch.Tensor,
     y: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal[
         "hard", "smooth", "c0", "c1", "c2"
     ] = "smooth",
@@ -2146,7 +2146,7 @@ def less_equal(
 def eq(
     x: torch.Tensor,
     y: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal[
         "hard", "smooth", "c0", "c1", "c2"
     ] = "smooth",
@@ -2182,7 +2182,7 @@ def eq(
 def not_equal(
     x: torch.Tensor,
     y: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     mode: Literal[
         "hard", "smooth", "c0", "c1", "c2"
     ] = "smooth",
@@ -2219,7 +2219,7 @@ def not_equal(
 def isclose(
     x: torch.Tensor,
     y: torch.Tensor,
-    softness: float = 0.1,
+    softness: float | torch.Tensor = 0.1,
     rtol: float = 1e-05,
     atol: float = 1e-08,
     mode: Literal[

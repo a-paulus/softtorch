@@ -922,6 +922,126 @@ def test_softness_validation():
         st.greater(x, torch.tensor(2.0), softness=0.0)
 
 
+def test_scalar_tensor_softness_validation():
+    x = torch.tensor([3.0, 1.0, 2.0])
+    softness = torch.tensor(0.5)
+
+    out = st.argmax(x, softness=softness)
+    common.assert_finite(out, msg="argmax scalar tensor softness")
+    common.assert_finite(
+        st.sigmoidal(x, softness=softness), msg="sigmoidal scalar tensor softness"
+    )
+    common.assert_finite(
+        st.sort(x, softness=softness, method="sorting_network").values,
+        msg="sorting_network scalar tensor softness",
+    )
+    common.assert_finite(
+        st.sort(x, softness=softness, method="fast_soft_sort").values,
+        msg="fast_soft_sort scalar tensor softness",
+    )
+    common.assert_finite(
+        st.sort(x, softness=softness, method="ot", return_indices=False).values,
+        msg="ot scalar tensor softness",
+    )
+
+    with pytest.raises(ValueError, match="softness must be positive"):
+        st.argmax(x, softness=torch.tensor(0.0))
+    with pytest.raises(ValueError, match="softness must be a scalar"):
+        st.argmax(x, softness=torch.tensor([0.5, 1.0]))
+
+
+def _weighted_last_dim_sum(x):
+    weights = torch.arange(1, x.shape[-1] + 1, dtype=x.dtype, device=x.device)
+    return (x * weights).sum()
+
+
+def _assert_learnable_softness(loss_fn, init=0.5):
+    softness = torch.nn.Parameter(torch.tensor(init, dtype=torch.float64))
+    loss = loss_fn(softness)
+
+    (grad,) = torch.autograd.grad(loss, softness)
+    assert torch.isfinite(grad)
+    assert grad.abs() > 1e-8
+
+
+@pytest.mark.parametrize("mode", ("smooth", "c0", "c1", "c2"))
+def test_elementwise_learnable_scalar_tensor_softness(mode):
+    x = torch.tensor([-0.4, 0.1, 0.8, 1.3], dtype=torch.float64)
+
+    _assert_learnable_softness(
+        lambda softness: _weighted_last_dim_sum(
+            st.sigmoidal(x, softness=softness, mode=mode)
+        )
+    )
+
+
+@pytest.mark.parametrize("method", ("softsort", "neuralsort"))
+@pytest.mark.parametrize("mode", ("smooth", "c0", "c1", "c2"))
+def test_argsort_learnable_scalar_tensor_softness(method, mode):
+    x = torch.tensor([[0.2, 1.7, -0.5, 0.9]], dtype=torch.float64)
+
+    def loss_fn(softness):
+        soft_perm = st.argsort(
+            x,
+            dim=-1,
+            softness=softness,
+            mode=mode,
+            method=method,
+        )
+        soft_sorted = torch.bmm(soft_perm, x.unsqueeze(-1)).squeeze(-1)
+        return _weighted_last_dim_sum(soft_sorted)
+
+    _assert_learnable_softness(loss_fn)
+
+
+@pytest.mark.parametrize("mode", ("smooth", "c0", "c1", "c2"))
+def test_sorting_network_learnable_scalar_tensor_softness(mode):
+    x = torch.tensor([[0.2, 1.7, -0.5, 0.9]], dtype=torch.float64)
+
+    _assert_learnable_softness(
+        lambda softness: _weighted_last_dim_sum(
+            st.sort(x, dim=-1, softness=softness, mode=mode, method="sorting_network").values
+        )
+    )
+
+
+@pytest.mark.parametrize("mode", ("smooth", "c0", "c1", "c2"))
+def test_fast_soft_sort_learnable_scalar_tensor_softness(mode):
+    x = torch.tensor([[0.2, 1.7, -0.5, 0.9]], dtype=torch.float64)
+
+    _assert_learnable_softness(
+        lambda softness: _weighted_last_dim_sum(
+            st.sort(
+                x,
+                dim=-1,
+                softness=softness,
+                mode=mode,
+                method="fast_soft_sort",
+                return_indices=False,
+            ).values
+        ),
+        init=5.0,
+    )
+
+
+@pytest.mark.parametrize("mode", ("smooth", "c0", "c1", "c2"))
+def test_ot_rejects_learnable_scalar_tensor_softness(mode):
+    x = torch.tensor([[0.2, 1.7, -0.5, 0.9]], dtype=torch.float64)
+    softness = torch.nn.Parameter(torch.tensor(0.5, dtype=torch.float64))
+
+    with pytest.raises(
+        ValueError, match="learnable tensor softness is not supported for OT"
+    ):
+        st.sort(
+            x,
+            dim=-1,
+            softness=softness,
+            mode=mode,
+            method="ot",
+            return_indices=False,
+        )
+
+
 def test_topk_k_validation():
     x = torch.tensor([3.0, 1.0, 2.0])
     with pytest.raises(ValueError, match="k must be positive"):

@@ -2,7 +2,7 @@ import torch
 
 
 def _soft_compare_and_swap(
-    a: torch.Tensor, b: torch.Tensor, softness: float, mode: str
+    a: torch.Tensor, b: torch.Tensor, softness: float | torch.Tensor, mode: str
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     """Return (soft_min, soft_max, sigma) via sigmoidal mixing."""
     from softtorch.functions import sigmoidal
@@ -13,7 +13,7 @@ def _soft_compare_and_swap(
     return soft_min, soft_max, sigma
 
 
-def _bitonic_sort_ascending(x: torch.Tensor, softness: float, mode: str) -> torch.Tensor:
+def _bitonic_sort_ascending(x: torch.Tensor, softness: float | torch.Tensor, mode: str) -> torch.Tensor:
     """Ascending bitonic sort.  Last dim must have power-of-2 length."""
     n = x.shape[-1]
     num_phases = (n.bit_length() - 1) if n > 1 else 0
@@ -40,7 +40,7 @@ def _bitonic_sort_ascending(x: torch.Tensor, softness: float, mode: str) -> torc
 
 def _sort_via_sorting_network(
     x: torch.Tensor,
-    softness: float,
+    softness: float | torch.Tensor,
     mode: str,
     descending: bool,
     standardized: bool = False,
@@ -74,7 +74,7 @@ def _sort_via_sorting_network(
 
 
 def _bitonic_argsort_ascending(
-    x: torch.Tensor, softness: float, mode: str
+    x: torch.Tensor, softness: float | torch.Tensor, mode: str
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """1-D ascending bitonic sort with permutation tracking.
 
@@ -117,7 +117,7 @@ def _bitonic_argsort_ascending(
 
 def _argsort_via_sorting_network(
     x: torch.Tensor,
-    softness: float,
+    softness: float | torch.Tensor,
     mode: str,
     descending: bool,
     standardized: bool = False,
