@@ -7,6 +7,16 @@ import torch
 import softtorch
 
 
+def _replace_value_keep_grad(forward, backward):
+    if forward is None or backward is None:
+        return forward
+    y = (forward - backward).detach() + backward
+    if isinstance(y, torch.Tensor) and y.is_floating_point():
+        same_nonfinite = (forward == backward) & ~torch.isfinite(forward)
+        y = torch.where(torch.isnan(y) & same_nonfinite, forward.detach(), y)
+    return y
+
+
 def grad_replace(fn: Callable) -> Callable:
     """This decorator calls the decorated function twice: once with `forward=True` and once with `forward=False`.
     It returns the output from the forward pass, but uses the output from the backward pass to compute gradients.
@@ -25,7 +35,7 @@ def grad_replace(fn: Callable) -> Callable:
         fw_y = fn(*args, **kwargs, forward=True)
         bw_y = fn(*args, **kwargs, forward=False)
         return torch.utils._pytree.tree_map(
-            lambda f, b: f if f is None or b is None else (f - b).detach() + b,
+            _replace_value_keep_grad,
             fw_y,
             bw_y,
         )
@@ -65,7 +75,7 @@ def st(fn: Callable) -> Callable:
         fw_y = fn(*args, **kwargs, mode="hard")
         bw_y = fn(*args, **kwargs, mode=mode)
         return torch.utils._pytree.tree_map(
-            lambda f, b: f if f is None or b is None else (f - b).detach() + b,
+            _replace_value_keep_grad,
             fw_y,
             bw_y,
         )
