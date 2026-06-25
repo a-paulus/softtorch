@@ -21,9 +21,10 @@ def _proj_transport_polytope_entropic(
     C: torch.Tensor,  # (n, m)
     mu: torch.Tensor,  # (n,)
     nu: torch.Tensor,  # (m,)
-    epsilon: float,
+    epsilon: float | torch.Tensor,
     tol: float = 1e-5,
     max_iter: int = 10000,
+    return_log_probs: bool = False,
 ) -> torch.Tensor:
     """Solve entropy-regularized OT via Sinkhorn (log-domain) with implicit diff."""
     orig_dtype = C.dtype
@@ -81,7 +82,10 @@ def _proj_transport_polytope_entropic(
     f_star, g_rest_star = solve((f0, g_rest0), C, mu, nu, epsilon)
 
     g_star = torch.cat([torch.zeros(1, dtype=C.dtype, device=C.device), g_rest_star])
-    Gamma = torch.exp((f_star[:, None] + g_star[None, :] - C) / epsilon)
+    log_gamma = (f_star[:, None] + g_star[None, :] - C) / epsilon
+    if return_log_probs:
+        return log_gamma.to(orig_dtype)
+    Gamma = torch.exp(log_gamma)
     return Gamma.to(orig_dtype)
 
 
@@ -208,6 +212,7 @@ def _proj_transport_polytope(
     sinkhorn_max_iter: int = 10000,
     lbfgs_tol: float = 1e-5,
     lbfgs_max_iter: int = 10000,
+    return_log_probs: bool = False,
 ) -> torch.Tensor:  # (..., [n], m)
     """Projects a cost matrix onto the transport polytope between `mu` and `nu`.
 
@@ -230,6 +235,7 @@ def _proj_transport_polytope(
                 epsilon=softness,
                 tol=sinkhorn_tol,
                 max_iter=sinkhorn_max_iter,
+                return_log_probs=return_log_probs,
             )
 
     elif mode in ("c0", "c1", "c2"):
@@ -256,8 +262,14 @@ def _proj_transport_polytope(
     else:
         raise ValueError(f"Invalid mode: {mode}")
 
-    Gamma_list = [proj_fn(c) for c in cost]
-    Gamma = torch.stack(Gamma_list, dim=0)  # (B, n, m)
-    y = Gamma * n  # (B, [n], [m])
+    results = torch.stack([proj_fn(c) for c in cost], dim=0)  # (B, n, m)
+    if return_log_probs:
+        log_n = torch.log(torch.tensor(n, dtype=results.dtype, device=results.device))
+        if mode == "smooth":
+            y = results + log_n
+        else:
+            y = torch.log(results) + log_n
+    else:
+        y = results * n  # (B, [n], [m])
     y = y.reshape(*batch_sizes, n, m)
     return y

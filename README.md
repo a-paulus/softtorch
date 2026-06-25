@@ -30,6 +30,7 @@ All operators offer multiple modes (controlling smoothness or boundedness of the
 All operators also support straight-through estimation, using the non-differentiable function in the forward pass and the soft relaxation in the backward pass.
 
 *Note, while SoftTorch is designed to provide direct drop-in replacements for PyTorch's operators, soft axis-wise operators return a probability distribution over indices (instead of an index), effectively changing the shape of the function's output.*
+Pass `return_log_probs=True` to receive those index distributions as log probabilities; exponentiating the result recovers the usual probabilities, and exact zeros are represented as `-inf`. When differentiating through sparse-mode log probabilities, use `return_log_probs=True, log_prob_eps=eps` to floor probabilities before taking `log` and renormalize along the soft-index axis.
 
 
 ## Installation

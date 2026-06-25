@@ -1175,6 +1175,37 @@ def test_gated_grad(fn_name):
     common.assert_finite(x_false.grad, msg=f"{fn_name} gated_grad=False")
 
 
+@pytest.mark.parametrize(
+    "return_log_probs, log_prob_eps",
+    [(False, None), (True, None), (True, 1e-3)],
+)
+def test_topk_gated_grad_false_preserves_returned_index_gradients(
+    return_log_probs, log_prob_eps
+):
+    x = common.gradient_input((5,), torch.float64)
+    kwargs = {"return_log_probs": return_log_probs}
+    if log_prob_eps is not None:
+        kwargs["log_prob_eps"] = log_prob_eps
+
+    out = st.topk(
+        x,
+        k=2,
+        dim=-1,
+        mode="smooth",
+        method="softsort",
+        softness=1.0,
+        gated_grad=False,
+        **kwargs,
+    )
+    weights = torch.arange(
+        out.indices.numel(), dtype=out.indices.dtype, device=out.indices.device
+    ).reshape_as(out.indices)
+    grad = torch.autograd.grad(torch.sum(out.indices * weights), x)[0]
+
+    common.assert_finite(grad, msg="topk returned indices gated_grad=False")
+    assert torch.any(grad != 0)
+
+
 # ---------------------------------------------------------------------------
 # return_indices parameter for sort (issue 19)
 # ---------------------------------------------------------------------------
@@ -1213,6 +1244,719 @@ def test_quantile_return_argquantile():
     common.assert_finite(val, msg="quantile value")
     common.assert_finite(idx, msg="quantile argquantile")
     common.assert_simplex(idx, atol=1e-4)
+
+
+# ---------------------------------------------------------------------------
+# return_log_probs parameter for SoftIndex outputs
+# ---------------------------------------------------------------------------
+
+
+def _assert_log_probs_match_probs(log_probs, probs, msg):
+    assert not torch.any(torch.isnan(log_probs)), f"NaN in {msg}"
+    common.assert_allclose(torch.exp(log_probs), probs, tol=1e-6)
+
+
+def _manual_log_prob_eps(probs, eps):
+    probs = torch.clamp(probs, min=eps, max=1.0)
+    probs = probs / torch.sum(probs, dim=-1, keepdim=True)
+    return torch.log(probs)
+
+
+_LOG_PROB_INDEX_CASES = [
+    (
+        "argmax",
+        lambda x, method, mode, **kwargs: st.argmax(
+            x, dim=-1, method=method, mode=mode, **kwargs
+        ),
+    ),
+    (
+        "argmin",
+        lambda x, method, mode, **kwargs: st.argmin(
+            x, dim=-1, method=method, mode=mode, **kwargs
+        ),
+    ),
+    (
+        "argsort",
+        lambda x, method, mode, **kwargs: st.argsort(
+            x, dim=-1, method=method, mode=mode, **kwargs
+        ),
+    ),
+    (
+        "argquantile",
+        lambda x, method, mode, **kwargs: st.argquantile(
+            x, q=0.35, dim=-1, method=method, mode=mode, **kwargs
+        ),
+    ),
+    (
+        "argmedian",
+        lambda x, method, mode, **kwargs: st.argmedian(
+            x, dim=-1, method=method, mode=mode, **kwargs
+        ),
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "case_name, call",
+    _LOG_PROB_INDEX_CASES,
+    ids=[case_name for case_name, _ in _LOG_PROB_INDEX_CASES],
+)
+@pytest.mark.parametrize("method", ("softsort", "neuralsort", "ot", "sorting_network"))
+@pytest.mark.parametrize("mode", ("hard", "smooth", "c0", "c1", "c2"))
+def test_return_log_probs_softindex_outputs(case_name, call, method, mode):
+    x = torch.tensor([[0.2, 1.7, -0.5, 0.9]], dtype=torch.float64)
+
+    probs = call(x, method, mode)
+    log_probs = call(x, method, mode, return_log_probs=True)
+
+    _assert_log_probs_match_probs(log_probs, probs, f"{case_name}/{method}/{mode}")
+
+
+_LOG_PROB_VALUE_CASES = [
+    (
+        "max",
+        lambda x, method, mode, **kwargs: st.max(
+            x, dim=-1, method=method, mode=mode, **kwargs
+        ),
+    ),
+    (
+        "min",
+        lambda x, method, mode, **kwargs: st.min(
+            x, dim=-1, method=method, mode=mode, **kwargs
+        ),
+    ),
+    (
+        "sort",
+        lambda x, method, mode, **kwargs: st.sort(
+            x, dim=-1, method=method, mode=mode, **kwargs
+        ),
+    ),
+    (
+        "quantile",
+        lambda x, method, mode, **kwargs: st.quantile(
+            x,
+            q=0.35,
+            dim=-1,
+            method=method,
+            mode=mode,
+            return_argquantile=True,
+            **kwargs,
+        ),
+    ),
+    (
+        "median",
+        lambda x, method, mode, **kwargs: st.median(
+            x, dim=-1, method=method, mode=mode, **kwargs
+        ),
+    ),
+    (
+        "topk",
+        lambda x, method, mode, **kwargs: st.topk(
+            x, k=2, dim=-1, method=method, mode=mode, **kwargs
+        ),
+    ),
+]
+
+
+def _values_and_indices(out):
+    if isinstance(out, tuple) and not hasattr(out, "values"):
+        return out
+    return out.values, out.indices
+
+
+@pytest.mark.parametrize(
+    "case_name, call",
+    _LOG_PROB_VALUE_CASES,
+    ids=[case_name for case_name, _ in _LOG_PROB_VALUE_CASES],
+)
+@pytest.mark.parametrize("method", ("softsort", "neuralsort", "ot"))
+@pytest.mark.parametrize("mode", ("hard", "smooth", "c0", "c1", "c2"))
+def test_return_log_probs_value_outputs(case_name, call, method, mode):
+    x = torch.tensor([[0.2, 1.7, -0.5, 0.9]], dtype=torch.float64)
+
+    values, probs = _values_and_indices(call(x, method, mode))
+    log_values, log_probs = _values_and_indices(
+        call(x, method, mode, return_log_probs=True)
+    )
+
+    common.assert_allclose(log_values, values, tol=1e-6)
+    _assert_log_probs_match_probs(log_probs, probs, f"{case_name}/{method}/{mode}")
+
+
+@pytest.mark.parametrize(
+    "case_name, call",
+    _LOG_PROB_INDEX_CASES,
+    ids=[case_name for case_name, _ in _LOG_PROB_INDEX_CASES],
+)
+def test_return_log_probs_log_prob_eps_index_outputs_match_manual(case_name, call):
+    x = torch.tensor([[0.2, 1.7, -0.5, 0.9]], dtype=torch.float64)
+    eps = 1e-3
+
+    probs = call(x, "softsort", "c0", softness=0.01)
+    log_probs = call(
+        x,
+        "softsort",
+        "c0",
+        softness=0.01,
+        return_log_probs=True,
+        log_prob_eps=eps,
+    )
+    expected = _manual_log_prob_eps(probs, eps)
+
+    assert torch.all(torch.isfinite(log_probs)), f"nonfinite log_probs in {case_name}"
+    common.assert_allclose(log_probs, expected, tol=1e-6)
+    common.assert_allclose(
+        torch.sum(torch.exp(log_probs), dim=-1),
+        torch.ones_like(log_probs[..., 0]),
+        tol=1e-6,
+    )
+
+
+@pytest.mark.parametrize(
+    "case_name, call",
+    _LOG_PROB_VALUE_CASES,
+    ids=[case_name for case_name, _ in _LOG_PROB_VALUE_CASES],
+)
+def test_return_log_probs_log_prob_eps_value_outputs_match_manual(case_name, call):
+    x = torch.tensor([[0.2, 1.7, -0.5, 0.9]], dtype=torch.float64)
+    eps = 1e-3
+
+    values, probs = _values_and_indices(call(x, "softsort", "c0", softness=0.01))
+    log_values, log_probs = _values_and_indices(
+        call(
+            x,
+            "softsort",
+            "c0",
+            softness=0.01,
+            return_log_probs=True,
+            log_prob_eps=eps,
+        )
+    )
+    expected = _manual_log_prob_eps(probs, eps)
+
+    common.assert_allclose(log_values, values, tol=1e-6)
+    assert torch.all(torch.isfinite(log_probs)), f"nonfinite log_probs in {case_name}"
+    common.assert_allclose(log_probs, expected, tol=1e-6)
+
+
+def test_return_log_probs_log_prob_eps_matches_manual_ot():
+    x = torch.tensor([[0.2, 1.7, -0.5]], dtype=torch.float64)
+    eps = 1e-3
+
+    probs = st.argsort(x, dim=-1, method="ot", mode="c1", softness=1.0)
+    log_probs = st.argsort(
+        x,
+        dim=-1,
+        method="ot",
+        mode="c1",
+        softness=1.0,
+        return_log_probs=True,
+        log_prob_eps=eps,
+    )
+    expected = _manual_log_prob_eps(probs, eps)
+
+    assert torch.all(torch.isfinite(log_probs)), "nonfinite OT log_prob_eps"
+    common.assert_allclose(log_probs, expected, tol=1e-5)
+
+
+def test_return_log_probs_sparse_mode_nan_to_num_does_not_fix_gradients():
+    x = torch.tensor([0.2, 1.7, -0.5, 0.9], dtype=torch.float64).requires_grad_()
+    weights = torch.arange(1, 5, dtype=x.dtype)
+
+    log_probs = st.argmax(
+        x,
+        dim=0,
+        mode="c0",
+        softness=0.01,
+        return_log_probs=True,
+    )
+    loss = (torch.nan_to_num(log_probs, neginf=-1e9) * weights).sum()
+    loss.backward()
+
+    assert x.grad is not None
+    assert not torch.all(torch.isfinite(x.grad))
+
+
+@pytest.mark.parametrize("method", ("softsort", "neuralsort"))
+@pytest.mark.parametrize("mode", ("c0", "c1", "c2"))
+def test_return_log_probs_log_prob_eps_has_finite_sparse_gradients(method, mode):
+    x = torch.tensor([0.2, 1.7, -0.5, 0.9], dtype=torch.float64).requires_grad_()
+    weights = torch.arange(1, 5, dtype=x.dtype)
+
+    log_probs = st.argmax(
+        x,
+        dim=0,
+        method=method,
+        mode=mode,
+        softness=0.01,
+        return_log_probs=True,
+        log_prob_eps=1e-12,
+    )
+    loss = (log_probs * weights).sum()
+    loss.backward()
+
+    assert x.grad is not None
+    assert torch.all(torch.isfinite(x.grad)), f"nonfinite gradient in {method}/{mode}"
+
+
+def test_return_log_probs_log_prob_eps_requires_return_log_probs():
+    x = torch.tensor([0.2, 1.7, -0.5, 0.9], dtype=torch.float64)
+
+    with pytest.raises(ValueError, match="return_log_probs=True"):
+        st.argmax(x, dim=0, log_prob_eps=1e-3)
+
+    with pytest.raises(ValueError, match="return_log_probs=True"):
+        st.topk(x, k=2, dim=0, log_prob_eps=1e-3)
+
+
+@pytest.mark.parametrize("eps", (0.0, -1.0, 1.5))
+def test_return_log_probs_log_prob_eps_validates_range(eps):
+    x = torch.tensor([0.2, 1.7, -0.5, 0.9], dtype=torch.float64)
+
+    with pytest.raises(ValueError, match="log_prob_eps must be in"):
+        st.argmax(x, dim=0, return_log_probs=True, log_prob_eps=eps)
+
+
+@pytest.mark.parametrize("method", ("softsort", "neuralsort", "ot", "sorting_network"))
+@pytest.mark.parametrize("mode", ("smooth", "c0"))
+def test_return_log_probs_nonlast_dim_keepdim_and_endpoints(method, mode):
+    x = torch.tensor(
+        [[0.2, 1.7, -0.5, 0.9], [2.0, -1.0, 0.3, 0.7]], dtype=torch.float64
+    )
+    cases = [
+        ("argmax", lambda **kwargs: st.argmax(x, dim=0, keepdim=True, **kwargs)),
+        ("argmin", lambda **kwargs: st.argmin(x, dim=0, keepdim=False, **kwargs)),
+        ("argsort", lambda **kwargs: st.argsort(x, dim=0, **kwargs)),
+        (
+            "argquantile_q0",
+            lambda **kwargs: st.argquantile(x, q=0.0, dim=0, keepdim=True, **kwargs),
+        ),
+        (
+            "argquantile_q1",
+            lambda **kwargs: st.argquantile(x, q=1.0, dim=0, keepdim=False, **kwargs),
+        ),
+        (
+            "argmedian",
+            lambda **kwargs: st.argmedian(x, dim=0, keepdim=True, **kwargs),
+        ),
+    ]
+
+    for case_name, call in cases:
+        probs = call(method=method, mode=mode, softness=1.0, standardize=False)
+        log_probs = call(
+            method=method,
+            mode=mode,
+            softness=1.0,
+            standardize=False,
+            return_log_probs=True,
+        )
+        _assert_log_probs_match_probs(log_probs, probs, f"{case_name}/{method}/{mode}")
+
+
+@pytest.mark.parametrize(
+    "case_name, call",
+    [
+        (
+            "argmax",
+            lambda x, method: st.argmax(
+                x, dim=-1, method=method, mode="smooth", return_log_probs=True
+            ),
+        ),
+        (
+            "argmin",
+            lambda x, method: st.argmin(
+                x, dim=-1, method=method, mode="smooth", return_log_probs=True
+            ),
+        ),
+        (
+            "argsort",
+            lambda x, method: st.argsort(
+                x, dim=-1, method=method, mode="smooth", return_log_probs=True
+            ),
+        ),
+        (
+            "argquantile",
+            lambda x, method: st.argquantile(
+                x, q=0.35, dim=-1, method=method, mode="smooth", return_log_probs=True
+            ),
+        ),
+        (
+            "argmedian",
+            lambda x, method: st.argmedian(
+                x, dim=-1, method=method, mode="smooth", return_log_probs=True
+            ),
+        ),
+    ],
+)
+@pytest.mark.parametrize("method", ("softsort", "neuralsort", "ot", "sorting_network"))
+def test_return_log_probs_smooth_outputs_have_finite_gradients(case_name, call, method):
+    x = torch.tensor([[0.2, 1.7, -0.5, 0.9]], dtype=torch.float64).requires_grad_()
+
+    log_probs = call(x, method)
+    weights = torch.arange(
+        1, log_probs.shape[-1] + 1, dtype=log_probs.dtype, device=log_probs.device
+    )
+    loss = (log_probs * weights).sum()
+    loss.backward()
+
+    assert torch.all(torch.isfinite(log_probs)), f"nonfinite log_probs in {case_name}"
+    assert x.grad is not None
+    assert torch.all(torch.isfinite(x.grad)), f"nonfinite gradient in {case_name}"
+
+
+@pytest.mark.parametrize("fn_name", ("max", "sort", "topk"))
+@pytest.mark.parametrize("method", ("fast_soft_sort", "sorting_network"))
+@pytest.mark.parametrize("mode", ("smooth", "c0", "c1", "c2"))
+def test_return_log_probs_preserves_none_indices(fn_name, method, mode):
+    x = torch.tensor([[0.2, 1.7, -0.5, 0.9]], dtype=torch.float64)
+    fn = getattr(st, fn_name)
+    kwargs = dict(dim=-1, method=method, mode=mode)
+    if fn_name == "topk":
+        kwargs["k"] = 2
+
+    out = fn(x, **kwargs)
+    log_out = fn(x, **kwargs, return_log_probs=True)
+
+    assert out.indices is None
+    assert log_out.indices is None
+    common.assert_allclose(log_out.values, out.values, tol=1e-6)
+
+
+def test_return_log_probs_hard_zeros_are_negative_infinity():
+    x = torch.tensor([3.0, 1.0, 2.0])
+
+    probs = st.argsort(x, dim=0, mode="hard")
+    log_probs = st.argsort(x, dim=0, mode="hard", return_log_probs=True)
+
+    _assert_log_probs_match_probs(log_probs, probs, "argsort hard")
+    assert torch.all(log_probs[probs == 1] == 0)
+    assert torch.all(torch.isneginf(log_probs[probs == 0]))
+
+
+def test_return_log_probs_smooth_simplex_avoids_softmax_underflow():
+    x = torch.tensor([1000.0, 0.0, -1000.0], dtype=torch.float32)
+
+    probs = st.argmax(
+        x,
+        dim=0,
+        mode="smooth",
+        method="softsort",
+        softness=1.0,
+        standardize=False,
+    )
+    log_probs = st.argmax(
+        x,
+        dim=0,
+        mode="smooth",
+        method="softsort",
+        softness=1.0,
+        standardize=False,
+        return_log_probs=True,
+    )
+
+    assert torch.isneginf(torch.log(probs)).any()
+    assert torch.all(torch.isfinite(log_probs))
+    _assert_log_probs_match_probs(log_probs, probs, "argmax smooth softsort")
+
+
+@pytest.mark.parametrize(
+    "case_name, call",
+    [
+        (
+            "max",
+            lambda x, **kwargs: st.max(
+                x, dim=0, method="softsort", mode="smooth", **kwargs
+            ).indices,
+        ),
+        (
+            "min",
+            lambda x, **kwargs: st.min(
+                x, dim=0, method="softsort", mode="smooth", **kwargs
+            ).indices,
+        ),
+        (
+            "sort",
+            lambda x, **kwargs: st.sort(
+                x, dim=0, method="softsort", mode="smooth", **kwargs
+            ).indices,
+        ),
+        (
+            "quantile",
+            lambda x, **kwargs: st.quantile(
+                x,
+                q=0.5,
+                dim=0,
+                method="softsort",
+                mode="smooth",
+                return_argquantile=True,
+                **kwargs,
+            )[1],
+        ),
+        (
+            "median",
+            lambda x, **kwargs: st.median(
+                x, dim=0, method="softsort", mode="smooth", **kwargs
+            ).indices,
+        ),
+        (
+            "topk",
+            lambda x, **kwargs: st.topk(
+                x, k=2, dim=0, method="softsort", mode="smooth", **kwargs
+            ).indices,
+        ),
+    ],
+)
+def test_return_log_probs_value_outputs_avoid_softmax_underflow(case_name, call):
+    x = torch.tensor([1000.0, 0.0, -1000.0], dtype=torch.float32)
+
+    probs = call(x, softness=1.0, standardize=False)
+    log_probs = call(x, softness=1.0, standardize=False, return_log_probs=True)
+
+    assert torch.isneginf(torch.log(probs)).any()
+    assert torch.all(torch.isfinite(log_probs))
+    _assert_log_probs_match_probs(log_probs, probs, case_name)
+
+
+@pytest.mark.parametrize(
+    "case_name, call",
+    [
+        (
+            "max",
+            lambda x, **kwargs: st.max(
+                x, dim=-1, method="softsort", mode="smooth", **kwargs
+            ),
+        ),
+        (
+            "min",
+            lambda x, **kwargs: st.min(
+                x, dim=-1, method="softsort", mode="smooth", **kwargs
+            ),
+        ),
+        (
+            "sort",
+            lambda x, **kwargs: st.sort(
+                x, dim=-1, method="softsort", mode="smooth", **kwargs
+            ),
+        ),
+        (
+            "quantile",
+            lambda x, **kwargs: st.quantile(
+                x,
+                q=0.35,
+                dim=-1,
+                method="softsort",
+                mode="smooth",
+                return_argquantile=True,
+                **kwargs,
+            ),
+        ),
+        (
+            "median",
+            lambda x, **kwargs: st.median(
+                x, dim=-1, method="softsort", mode="smooth", **kwargs
+            ),
+        ),
+        (
+            "topk",
+            lambda x, **kwargs: st.topk(
+                x, k=2, dim=-1, method="softsort", mode="smooth", **kwargs
+            ),
+        ),
+    ],
+)
+def test_return_log_probs_preserves_value_gradients(case_name, call):
+    x0 = torch.tensor([[0.2, 1.7, -0.5, 0.9]], dtype=torch.float64)
+
+    def value_and_grad(return_log_probs, log_prob_eps=None):
+        x = x0.clone().requires_grad_(True)
+        out = call(
+            x,
+            softness=1.0,
+            standardize=False,
+            return_log_probs=return_log_probs,
+            log_prob_eps=log_prob_eps,
+        )
+        values, _ = _values_and_indices(out)
+        values.sum().backward()
+        return values.detach(), x.grad
+
+    values, grad = value_and_grad(False)
+    log_values, log_grad = value_and_grad(True)
+    safe_log_values, safe_log_grad = value_and_grad(True, log_prob_eps=1e-3)
+
+    common.assert_allclose(log_values, values, tol=1e-6)
+    common.assert_allclose(log_grad, grad, tol=1e-6)
+    common.assert_allclose(safe_log_values, values, tol=1e-6)
+    common.assert_allclose(safe_log_grad, grad, tol=1e-6)
+
+
+@pytest.mark.parametrize(
+    "case_name, st_call, hard_call",
+    [
+        (
+            "argmax_st",
+            lambda x, mode: st.argmax_st(
+                x, dim=0, mode=mode, return_log_probs=True
+            ),
+            lambda x: st.argmax(x, dim=0, mode="hard"),
+        ),
+        (
+            "argsort_st",
+            lambda x, mode: st.argsort_st(
+                x, dim=0, mode=mode, return_log_probs=True
+            ),
+            lambda x: st.argsort(x, dim=0, mode="hard"),
+        ),
+        (
+            "argquantile_st",
+            lambda x, mode: st.argquantile_st(
+                x, q=0.35, dim=0, mode=mode, return_log_probs=True
+            ),
+            lambda x: st.argquantile(x, q=0.35, dim=0, mode="hard"),
+        ),
+    ],
+)
+@pytest.mark.parametrize("mode", ("smooth", "c0", "c1", "c2"))
+def test_return_log_probs_st_outputs_handle_negative_infinity(
+    case_name, st_call, hard_call, mode
+):
+    x = torch.tensor([0.2, 1.7, -0.5, 0.9], dtype=torch.float64)
+
+    log_probs = st_call(x, mode)
+
+    assert not torch.any(torch.isnan(log_probs)), f"NaN in {case_name}/{mode}"
+    _assert_log_probs_match_probs(log_probs, hard_call(x), f"{case_name}/{mode}")
+
+
+@pytest.mark.parametrize(
+    "case_name, st_call, hard_call",
+    [
+        (
+            "max_st",
+            lambda x, mode: st.max_st(
+                x, dim=0, mode=mode, return_log_probs=True
+            ).indices,
+            lambda x: st.max(x, dim=0, mode="hard").indices,
+        ),
+        (
+            "min_st",
+            lambda x, mode: st.min_st(
+                x, dim=0, mode=mode, return_log_probs=True
+            ).indices,
+            lambda x: st.min(x, dim=0, mode="hard").indices,
+        ),
+        (
+            "sort_st",
+            lambda x, mode: st.sort_st(
+                x, dim=0, mode=mode, return_log_probs=True
+            ).indices,
+            lambda x: st.sort(x, dim=0, mode="hard").indices,
+        ),
+        (
+            "quantile_st",
+            lambda x, mode: st.quantile_st(
+                x,
+                q=0.35,
+                dim=0,
+                mode=mode,
+                return_argquantile=True,
+                return_log_probs=True,
+            )[1],
+            lambda x: st.quantile(
+                x, q=0.35, dim=0, mode="hard", return_argquantile=True
+            )[1],
+        ),
+        (
+            "median_st",
+            lambda x, mode: st.median_st(
+                x, dim=0, mode=mode, return_log_probs=True
+            ).indices,
+            lambda x: st.median(x, dim=0, mode="hard").indices,
+        ),
+        (
+            "topk_st",
+            lambda x, mode: st.topk_st(
+                x, k=2, dim=0, mode=mode, return_log_probs=True
+            ).indices,
+            lambda x: st.topk(x, k=2, dim=0, mode="hard").indices,
+        ),
+    ],
+)
+@pytest.mark.parametrize("mode", ("smooth", "c0", "c1", "c2"))
+def test_return_log_probs_st_namedtuple_outputs_handle_negative_infinity(
+    case_name, st_call, hard_call, mode
+):
+    x = torch.tensor([0.2, 1.7, -0.5, 0.9], dtype=torch.float64)
+
+    log_probs = st_call(x, mode)
+
+    assert not torch.any(torch.isnan(log_probs)), f"NaN in {case_name}/{mode}"
+    _assert_log_probs_match_probs(log_probs, hard_call(x), f"{case_name}/{mode}")
+
+
+@pytest.mark.parametrize("keepdim", (False, True))
+def test_return_log_probs_dim_none_shapes(keepdim):
+    x = torch.tensor([[0.2, 1.7], [-0.5, 0.9]], dtype=torch.float64)
+
+    argmax_probs = st.argmax(x, dim=None, keepdim=keepdim)
+    argmax_log_probs = st.argmax(
+        x, dim=None, keepdim=keepdim, return_log_probs=True
+    )
+    _assert_log_probs_match_probs(argmax_log_probs, argmax_probs, "argmax dim=None")
+
+    argquantile_probs = st.argquantile(x, q=0.35, dim=None, keepdim=keepdim)
+    argquantile_log_probs = st.argquantile(
+        x, q=0.35, dim=None, keepdim=keepdim, return_log_probs=True
+    )
+    _assert_log_probs_match_probs(
+        argquantile_log_probs, argquantile_probs, "argquantile dim=None"
+    )
+    assert argmax_log_probs.shape == argmax_probs.shape
+    assert argquantile_log_probs.shape == argquantile_probs.shape
+
+
+def test_quantile_vector_q_return_log_probs():
+    x = common.make_tensor((6,), torch.float64)
+    q_vec = _VECTOR_Q
+
+    _, probs = st.quantile(
+        x, q_vec, dim=0, mode="smooth", softness=1.0, return_argquantile=True
+    )
+    _, log_probs = st.quantile(
+        x,
+        q_vec,
+        dim=0,
+        mode="smooth",
+        softness=1.0,
+        return_argquantile=True,
+        return_log_probs=True,
+    )
+
+    _assert_log_probs_match_probs(log_probs, probs, "quantile vector q")
+
+
+def test_quantile_vector_q_return_log_probs_log_prob_eps_matches_manual():
+    x = common.make_tensor((6,), torch.float64)
+    q_vec = _VECTOR_Q
+    eps = 1e-3
+
+    _, probs = st.quantile(
+        x, q_vec, dim=0, mode="c0", softness=0.01, return_argquantile=True
+    )
+    _, log_probs = st.quantile(
+        x,
+        q_vec,
+        dim=0,
+        mode="c0",
+        softness=0.01,
+        return_argquantile=True,
+        return_log_probs=True,
+        log_prob_eps=eps,
+    )
+    expected = _manual_log_prob_eps(probs, eps)
+
+    assert torch.all(torch.isfinite(log_probs)), "nonfinite quantile vector q log_probs"
+    common.assert_allclose(log_probs, expected, tol=1e-6)
 
 
 # ---------------------------------------------------------------------------

@@ -25,7 +25,88 @@ from softtorch.utils import (
 
 
 SoftBool = torch.Tensor  # probability in [0, 1]
-SoftIndex = torch.Tensor  # probabilities summing to 1 along the last dim
+SoftIndex = torch.Tensor  # probabilities, or log probabilities, along the last dim
+
+
+def _validate_log_prob_request(
+    return_log_probs: bool,
+    log_prob_eps: float | torch.Tensor | None,
+) -> None:
+    if log_prob_eps is None:
+        return
+    if not return_log_probs:
+        raise ValueError("log_prob_eps can only be set when return_log_probs=True")
+    if isinstance(log_prob_eps, torch.Tensor):
+        if log_prob_eps.numel() != 1:
+            raise ValueError(
+                f"log_prob_eps must be scalar, got shape {tuple(log_prob_eps.shape)}"
+            )
+        eps_value = float(log_prob_eps.detach())
+    else:
+        eps_value = float(log_prob_eps)
+    if eps_value <= 0 or eps_value > 1:
+        raise ValueError(f"log_prob_eps must be in (0, 1], got {log_prob_eps}")
+
+
+def _as_log_prob_eps(
+    log_prob_eps: float | torch.Tensor,
+    ref: torch.Tensor,
+) -> torch.Tensor:
+    return torch.as_tensor(log_prob_eps, dtype=ref.dtype, device=ref.device)
+
+
+def _log_soft_index_from_probs(
+    soft_index: SoftIndex,
+    log_prob_eps: float | torch.Tensor | None,
+) -> SoftIndex:
+    if log_prob_eps is not None:
+        eps = _as_log_prob_eps(log_prob_eps, soft_index)
+        soft_index = torch.clamp(soft_index, min=eps, max=1.0)
+        soft_index = soft_index / torch.sum(soft_index, dim=-1, keepdim=True)
+    return torch.log(soft_index)
+
+
+def _renormalize_log_soft_index(
+    soft_index: SoftIndex,
+    log_prob_eps: float | torch.Tensor | None,
+) -> SoftIndex:
+    if log_prob_eps is None:
+        return soft_index
+    log_eps = torch.log(_as_log_prob_eps(log_prob_eps, soft_index))
+    soft_index = torch.maximum(soft_index, log_eps)
+    return soft_index - torch.logsumexp(soft_index, dim=-1, keepdim=True)
+
+
+def _maybe_log_soft_index(
+    soft_index: SoftIndex | None,
+    return_log_probs: bool,
+    already_log: bool = False,
+    log_prob_eps: float | torch.Tensor | None = None,
+) -> SoftIndex | None:
+    if soft_index is None:
+        return None
+    if return_log_probs:
+        if already_log:
+            return _renormalize_log_soft_index(soft_index, log_prob_eps)
+        return _log_soft_index_from_probs(soft_index, log_prob_eps)
+    return soft_index
+
+
+def _soft_index_probs(soft_index: SoftIndex, is_log: bool) -> SoftIndex:
+    if is_log:
+        return torch.exp(soft_index)
+    return soft_index
+
+
+def _logaddexp_weighted(
+    x_log: SoftIndex,
+    y_log: SoftIndex,
+    y_weight: torch.Tensor,
+) -> SoftIndex:
+    return torch.logaddexp(
+        torch.log1p(-y_weight) + x_log,
+        torch.log(y_weight) + y_log,
+    )
 
 
 # Selection operators
@@ -207,6 +288,8 @@ def argmax(
     method: Literal["ot", "softsort", "neuralsort", "sorting_network"] = "softsort",
     standardize: bool = True,
     ot_kwargs: dict | None = None,
+    return_log_probs: bool = False,
+    log_prob_eps: float | torch.Tensor | None = None,
 ) -> SoftIndex:  # (..., {1}, ..., [n])
     """Performs a soft version of [torch.argmax](https://pytorch.org/docs/stable/generated/torch.argmax.html) of `x` along the specified dim.
 
@@ -229,18 +312,23 @@ def argmax(
     - `standardize`: If True, standardizes and squashes the input `x` along the specified dim before applying the softargmax operation. This can improve numerical stability and performance, especially when the values in `x` vary widely in scale.
 
     - `ot_kwargs`: Additional optional keyword arguments to pass to the OT projection operator, e.g., to control the number of max iterations or tolerance.
+    - `return_log_probs`: If True, returns log probabilities instead of probabilities. Exact zero probabilities are represented as `-inf`.
+    - `log_prob_eps`: Optional probability floor used only with `return_log_probs=True`. When set, probabilities are floored before taking `log` and renormalized along the soft-index dimension.
 
 
     **Returns:**
 
-    A SoftIndex of shape (..., {1}, ..., [n]) (positive Tensor which sums to 1 over the last dimension).
-    Represents the probability of an index corresponding to the argmax along the specified dim.
+    A SoftIndex of shape (..., {1}, ..., [n]) representing the distribution over indices corresponding to the argmax along the specified dim.
+    By default this contains probabilities that sum to 1 over the last dimension; if `return_log_probs=True`, it contains log probabilities instead.
     """
+    _validate_log_prob_request(return_log_probs, log_prob_eps)
+    project_return_log = return_log_probs and log_prob_eps is None
 
     if mode == "hard" or mode == "_hard":
         indices = torch.argmax(x, dim=dim, keepdim=keepdim)
         num_classes = x.shape[dim] if dim is not None else x.numel()
         soft_index = F.one_hot(indices, num_classes=num_classes).to(x.dtype)
+        soft_index_is_log = False
     else:
         x = _ensure_float(x)
         if dim is None:
@@ -257,8 +345,13 @@ def argmax(
         *batch_dims, n = x_last.shape
         if method == "softsort":
             soft_index = _proj_simplex(
-                x_last, dim=-1, softness=softness, mode=mode
+                x_last,
+                dim=-1,
+                softness=softness,
+                mode=mode,
+                return_log_probs=project_return_log,
             )  # (..., ..., [n])
+            soft_index_is_log = project_return_log
         elif method == "neuralsort":
             A = abs(
                 x_last[..., :, None] - x_last[..., None, :],
@@ -268,8 +361,13 @@ def argmax(
             A_sum = torch.sum(A, dim=-1)  # (..., ..., n)
             z = (n - 1) * x_last - A_sum  # (..., ..., n)
             soft_index = _proj_simplex(
-                z, dim=-1, softness=softness, mode=mode
+                z,
+                dim=-1,
+                softness=softness,
+                mode=mode,
+                return_log_probs=project_return_log,
             )  # (..., ..., [n])
+            soft_index_is_log = project_return_log
         elif method == "ot":
             anchors = torch.tensor([0.0, 1.0], device=x.device, dtype=x.dtype)  # (2,)
             anchors = anchors.expand(*batch_dims, 2)  # (..., ..., 2)
@@ -290,14 +388,17 @@ def argmax(
                 nu=nu,
                 softness=softness,
                 mode=mode,
+                return_log_probs=project_return_log,
                 **ot_kwargs,
             )  # (..., [n], 2)
             soft_index = out[..., 1]  # (..., ..., [n])
+            soft_index_is_log = project_return_log
         elif method == "sorting_network":
             P = _argsort_via_sorting_network(
                 x_last, softness, mode, descending=True, standardized=standardize
             )  # (..., ..., n, [n])
             soft_index = P[..., 0, :]  # (..., ..., [n])
+            soft_index_is_log = False
         else:
             raise ValueError(f"Invalid method: {method}")
 
@@ -308,7 +409,12 @@ def argmax(
                 )  # (1..., 1, 1..., [n])
             else:
                 soft_index = soft_index.unsqueeze(dim=_dim)  # (..., {1}, ..., [n])
-    return soft_index
+    return _maybe_log_soft_index(
+        soft_index,
+        return_log_probs,
+        already_log=soft_index_is_log,
+        log_prob_eps=log_prob_eps,
+    )
 
 
 def max(
@@ -323,6 +429,8 @@ def max(
     standardize: bool = True,
     ot_kwargs: dict | None = None,
     gated_grad: bool = True,
+    return_log_probs: bool = False,
+    log_prob_eps: float | torch.Tensor | None = None,
 ) -> torch.Tensor | torch.return_types.max[torch.Tensor, SoftIndex]:
     """Performs a soft version of [torch.max](https://pytorch.org/docs/stable/generated/torch.max.html) of `x` along the specified dim.
 
@@ -332,14 +440,17 @@ def max(
     **Extra Arguments:**
 
     - `gated_grad`: If `False`, stops the gradient flow through the soft index. True gives gated 'SiLU-style' gradients, while False gives integrated 'Softplus-style' gradients.
+    - `return_log_probs`: If True, returns `indices` as log probabilities instead of probabilities. `values` are unchanged.
+    - `log_prob_eps`: Optional probability floor used only with `return_log_probs=True`. When set, probabilities are floored before taking `log` and renormalized along the soft-index dimension.
 
     **Returns:**
 
     - If `dim` is None (default):  Scalar tensor representing the soft maximum of the flattened `x`.
     - If `dim` is specified: Namedtuple containing two fields:
         - `values`: Tensor of shape (..., {1}, ...) representing the soft maximum of `x`  along the specified dim.
-        - `indices`: SoftIndex of shape (..., {1}, ..., [n]) (positive Tensor which sums to 1 over the last dimension). Represents the soft  indices of the maximum values.
+        - `indices`: SoftIndex of shape (..., {1}, ..., [n]) representing the soft indices of the maximum values. By default this contains probabilities that sum to 1 over the last dimension; if `return_log_probs=True`, it contains log probabilities instead.
     """
+    _validate_log_prob_request(return_log_probs, log_prob_eps)
 
     if dim is None:
         num_dims = x.ndim
@@ -358,6 +469,9 @@ def max(
             soft_index = F.one_hot(indices, num_classes=x.shape[dim]).to(
                 x.dtype
             )  # (..., {1}, ..., [n])
+            soft_index = _maybe_log_soft_index(
+                soft_index, return_log_probs, log_prob_eps=log_prob_eps
+            )
             return torch.return_types.max((values, soft_index))
     elif method in ("fast_soft_sort", "smooth_sort", "sorting_network"):
         soft_sorted = sort(
@@ -378,6 +492,7 @@ def max(
             values = values.unsqueeze(_dim)
         return torch.return_types.max((values, None))
     else:
+        soft_index_is_log = return_log_probs and log_prob_eps is None and mode == "smooth"
         soft_index = argmax(
             x,
             dim=dim,
@@ -387,10 +502,13 @@ def max(
             method=method,
             standardize=standardize,
             ot_kwargs=ot_kwargs,
+            return_log_probs=soft_index_is_log,
         )  # (..., 1, ..., [n])
         if not gated_grad:
             soft_index = soft_index.detach()
-        values = take_along_dim(x, soft_index, dim=dim)  # (..., 1, ...)
+        values = take_along_dim(
+            x, _soft_index_probs(soft_index, soft_index_is_log), dim=dim
+        )  # (..., 1, ...)
         if dim is None:
             values = values.reshape(*(1,) * num_dims)  # (1..., 1, 1...)
         if dim is None or not keepdim:
@@ -402,6 +520,12 @@ def max(
         if dim is None:
             return values
         else:
+            soft_index = _maybe_log_soft_index(
+                soft_index,
+                return_log_probs,
+                already_log=soft_index_is_log,
+                log_prob_eps=log_prob_eps,
+            )
             return torch.return_types.max(
                 (values, soft_index)
             )  # (..., {1}, ...), (..., {1}, ..., [n])
@@ -416,6 +540,8 @@ def argmin(
     method: Literal["ot", "softsort", "neuralsort", "sorting_network"] = "softsort",
     standardize: bool = True,
     ot_kwargs: dict | None = None,
+    return_log_probs: bool = False,
+    log_prob_eps: float | torch.Tensor | None = None,
 ) -> SoftIndex:  # (..., {1}, ..., [n])
     """Performs a soft version of [torch.argmin](https://pytorch.org/docs/stable/generated/torch.argmin.html) of `x` along the specified dim.
     Implemented as [`softtorch.argmax`][] on `-x`, see respective documentation for details.
@@ -429,6 +555,8 @@ def argmin(
         keepdim=keepdim,
         standardize=standardize,
         ot_kwargs=ot_kwargs,
+        return_log_probs=return_log_probs,
+        log_prob_eps=log_prob_eps,
     )
 
 
@@ -444,6 +572,8 @@ def min(
     standardize: bool = True,
     ot_kwargs: dict | None = None,
     gated_grad: bool = True,
+    return_log_probs: bool = False,
+    log_prob_eps: float | torch.Tensor | None = None,
 ) -> torch.Tensor | torch.return_types.min[torch.Tensor, SoftIndex]:
     """Performs a soft version of [torch.min](https://pytorch.org/docs/stable/generated/torch.min.html) of `x` along the specified dim.
     Implemented via [`softtorch.max`][] on `-x`, see respective documentation for details.
@@ -459,6 +589,8 @@ def min(
             standardize=standardize,
             ot_kwargs=ot_kwargs,
             gated_grad=gated_grad,
+            return_log_probs=return_log_probs,
+            log_prob_eps=log_prob_eps,
         )
     else:
         values, soft_index = max(
@@ -471,6 +603,8 @@ def min(
             standardize=standardize,
             ot_kwargs=ot_kwargs,
             gated_grad=gated_grad,
+            return_log_probs=return_log_probs,
+            log_prob_eps=log_prob_eps,
         )
         return torch.return_types.min(
             (-values, soft_index)
@@ -486,6 +620,8 @@ def argsort(
     method: Literal["ot", "softsort", "neuralsort", "sorting_network"] = "neuralsort",
     standardize: bool = True,
     ot_kwargs: dict | None = None,
+    return_log_probs: bool = False,
+    log_prob_eps: float | torch.Tensor | None = None,
 ) -> SoftIndex:  # (..., n, ..., [n])
     """Performs a soft version of [torch.argsort](https://pytorch.org/docs/stable/generated/torch.argsort.html) of `x` along the specified dim.
 
@@ -514,12 +650,18 @@ def argsort(
     - `standardize`: If True, standardizes and squashes the input `x` along the specified dim before applying the softargsort operation. This can improve numerical stability and performance, especially when the values in `x` vary widely in scale.
 
     - `ot_kwargs`: Additional optional keyword arguments to pass to the OT projection operator, e.g., to control the number of max iterations or tolerance.
+    - `return_log_probs`: If True, returns log probabilities instead of probabilities. Exact zero probabilities are represented as `-inf`.
+    - `log_prob_eps`: Optional probability floor used only with `return_log_probs=True`. When set, probabilities are floored before taking `log` and renormalized along the soft-index dimension.
 
     **Returns:**
 
-    A SoftIndex of shape (..., n, ..., [n]) (positive Tensor which sums to 1 over the last dimension).
+    A SoftIndex of shape (..., n, ..., [n]).
+    By default this contains probabilities that sum to 1 over the last dimension; if `return_log_probs=True`, it contains log probabilities instead.
     The elements in (..., i, ..., [n]) represent a distribution over values in x for the ith smallest element along the specified dim.
     """
+    _validate_log_prob_request(return_log_probs, log_prob_eps)
+    project_return_log = return_log_probs and log_prob_eps is None
+
     if dim is None:
         dim = -1
     dim = _canonicalize_dim(dim, x.ndim)
@@ -530,6 +672,7 @@ def argsort(
         soft_index = F.one_hot(indices, num_classes=num_classes).to(
             x.dtype
         )  # (..., n, ..., [n])
+        soft_index_is_log = False
     else:
         x = _ensure_float(x)
         if standardize:
@@ -545,8 +688,13 @@ def argsort(
                 anchors[..., :, None] - x_last[..., None, :]
             )  # (..., ..., n, n)
             soft_index = _proj_simplex(
-                -abs_diff, dim=-1, softness=softness, mode=mode
+                -abs_diff,
+                dim=-1,
+                softness=softness,
+                mode=mode,
+                return_log_probs=project_return_log,
             )  # (..., ..., n, [n])
+            soft_index_is_log = project_return_log
         elif method == "neuralsort":
             A = abs(
                 x_last[..., :, None] - x_last[..., None, :],
@@ -563,8 +711,13 @@ def argsort(
                 coef[..., :, None] * x_last[..., None, :] + A_sum[..., None, :]
             )  # (..., ..., n, n)
             soft_index = _proj_simplex(
-                z, dim=-1, softness=softness, mode=mode
+                z,
+                dim=-1,
+                softness=softness,
+                mode=mode,
+                return_log_probs=project_return_log,
             )  # (..., ..., n, [n])
+            soft_index_is_log = project_return_log
         elif method == "ot":
             anchors = (
                 torch.linspace(0, n, n, dtype=x.dtype, device=x.device) / n
@@ -583,18 +736,31 @@ def argsort(
             if ot_kwargs is None:
                 ot_kwargs = {}
             out = _proj_transport_polytope(
-                cost=cost, mu=mu, nu=nu, softness=softness, mode=mode, **ot_kwargs
+                cost=cost,
+                mu=mu,
+                nu=nu,
+                softness=softness,
+                mode=mode,
+                return_log_probs=project_return_log,
+                **ot_kwargs,
             )  # (..., ..., [n], n)
             soft_index = torch.movedim(out, -1, -2)  # (..., ..., n, [n])
+            soft_index_is_log = project_return_log
         elif method == "sorting_network":
             soft_index = _argsort_via_sorting_network(
                 x_last, softness, mode, descending, standardized=standardize
             )  # (..., ..., n, [n])
+            soft_index_is_log = False
         else:
             raise ValueError(f"Invalid method: {method}")
 
         soft_index = torch.movedim(soft_index, -2, dim)  # (..., n, ..., [n])
-    return soft_index
+    return _maybe_log_soft_index(
+        soft_index,
+        return_log_probs,
+        already_log=soft_index_is_log,
+        log_prob_eps=log_prob_eps,
+    )
 
 
 def sort(
@@ -610,6 +776,8 @@ def sort(
     ot_kwargs: dict | None = None,
     gated_grad: bool = True,
     return_indices: bool = True,
+    return_log_probs: bool = False,
+    log_prob_eps: float | torch.Tensor | None = None,
 ) -> torch.return_types.sort[torch.Tensor, SoftIndex]:
     """Performs a soft version of [torch.sort](https://pytorch.org/docs/stable/generated/torch.sort.html) of `x` along the specified dim.
 
@@ -624,16 +792,17 @@ def sort(
 
     - `gated_grad`: If `False`, stops the gradient flow through the soft index. True gives gated 'SiLU-style' gradients, while False gives integrated 'Softplus-style' gradients.
     - `return_indices`: If `False`, skips computation of the soft index (indices will be `None`). This avoids the O(n²) memory cost of materializing the n×n soft permutation matrix.
+    - `return_log_probs`: If True, returns `indices` as log probabilities instead of probabilities. `values` are unchanged.
+    - `log_prob_eps`: Optional probability floor used only with `return_log_probs=True`. When set, probabilities are floored before taking `log` and renormalized along the soft-index dimension.
 
     **Returns:**
 
     - Namedtuple containing two fields:
         - `values`: Soft sorted values of `x`, shape (..., n, ...).
-        - `indices`: SoftIndex of shape (..., n, ..., [n]) (positive Tensor which sums
-            to 1 over the last dimension). Represents the soft indices of the sorted
-            values. `None` if `return_indices=False`, or when using `fast_soft_sort`
-            or `sorting_network` methods.
+        - `indices`: SoftIndex of shape (..., n, ..., [n]) representing the soft indices of the sorted values. By default this contains probabilities that sum to 1 over the last dimension; if `return_log_probs=True`, it contains log probabilities instead. `None` if `return_indices=False`, or when using `fast_soft_sort` or `sorting_network` methods.
     """
+    _validate_log_prob_request(return_log_probs, log_prob_eps)
+
     if dim is None:
         dim = -1
     dim = _canonicalize_dim(dim, x.ndim)
@@ -648,6 +817,9 @@ def sort(
             soft_index = F.one_hot(indices, num_classes=x.shape[dim]).to(
                 x.dtype
             )  # (..., n, ..., [n])
+            soft_index = _maybe_log_soft_index(
+                soft_index, return_log_probs, log_prob_eps=log_prob_eps
+            )
         else:
             soft_index = None
     else:
@@ -692,6 +864,12 @@ def sort(
                 "Use method='fast_soft_sort' with mode='smooth' instead, or use SoftJAX."
             )
         else:
+            soft_index_is_log = (
+                return_log_probs
+                and log_prob_eps is None
+                and return_indices
+                and mode == "smooth"
+            )
             soft_index = argsort(
                 x=x,
                 dim=dim,
@@ -701,12 +879,22 @@ def sort(
                 method=method,
                 standardize=standardize,
                 ot_kwargs=ot_kwargs,
+                return_log_probs=soft_index_is_log,
             )  # (..., n, ..., [n])
             if not gated_grad:
                 soft_index = soft_index.detach()
-            values = take_along_dim(x, soft_index, dim=dim)
+            values = take_along_dim(
+                x, _soft_index_probs(soft_index, soft_index_is_log), dim=dim
+            )
             if not return_indices:
                 soft_index = None
+            else:
+                soft_index = _maybe_log_soft_index(
+                    soft_index,
+                    return_log_probs,
+                    already_log=soft_index_is_log,
+                    log_prob_eps=log_prob_eps,
+                )
 
     ret = torch.return_types.sort(
         (values, soft_index)
@@ -727,6 +915,8 @@ def argquantile(
     ] = "linear",
     standardize: bool = True,
     ot_kwargs: dict | None = None,
+    return_log_probs: bool = False,
+    log_prob_eps: float | torch.Tensor | None = None,
 ) -> SoftIndex:  # (..., {1}, ..., [n])
     """Performs a soft version of [torch.quantile](https://pytorch.org/docs/stable/generated/torch.quantile.html)
     of `x` along the specified dim.
@@ -758,11 +948,16 @@ def argquantile(
     - `standardize`: If True, standardizes and squashes the input `x` along the specified dim before applying the softargquantile operation. This can improve numerical stability and performance, especially when the values in `x` vary widely in scale.
 
     - `ot_kwargs`: Additional optional keyword arguments to pass to the OT projection operator, e.g., to control the number of max iterations or tolerance.
+    - `return_log_probs`: If True, returns log probabilities instead of probabilities. Exact zero probabilities are represented as `-inf`.
+    - `log_prob_eps`: Optional probability floor used only with `return_log_probs=True`. When set, probabilities are floored before taking `log` and renormalized along the soft-index dimension.
 
     **Returns:**
 
-    A SoftIndex of shape (..., {1}, ..., [n]) for scalar q, or (k, ..., {1}, ..., [n]) for vector q of length k (q dimension prepended). Positive Tensor which sums to 1 over the last dimension. It represents a distribution over values in x being the q-quantile along the specified dim.
+    A SoftIndex of shape (..., {1}, ..., [n]) for scalar q, or (k, ..., {1}, ..., [n]) for vector q of length k (q dimension prepended). It represents a distribution over values in x being the q-quantile along the specified dim. By default this contains probabilities that sum to 1 over the last dimension; if `return_log_probs=True`, it contains log probabilities instead.
     """
+    _validate_log_prob_request(return_log_probs, log_prob_eps)
+    project_return_log = return_log_probs and log_prob_eps is None
+
     q_t = torch.as_tensor(q)
     if q_t.ndim > 1:
         raise ValueError(
@@ -781,6 +976,8 @@ def argquantile(
                 interpolation=interpolation,
                 standardize=standardize,
                 ot_kwargs=ot_kwargs,
+                return_log_probs=return_log_probs,
+                log_prob_eps=log_prob_eps,
             )
             for qi in q_t
         ]
@@ -807,6 +1004,7 @@ def argquantile(
     k, a, take_next = _quantile_k_a(q, n, interpolation)
     a_b = torch.unsqueeze(a, dim=-1)  # (..., ..., 1)
     kp1 = torch.minimum(k + 1, torch.tensor(n - 1, dtype=k.dtype, device=k.device))
+    soft_index_is_log = False
 
     if mode == "hard" or mode == "_hard":
         indices = torch.argsort(x_last, dim=-1, descending=False)  # (..., ..., n)
@@ -835,19 +1033,32 @@ def argquantile(
                     anchors[..., :, None] - x_last[..., None, :]
                 )  # (..., ..., 2, n)
                 proj = _proj_simplex(
-                    -abs_diff, dim=-1, softness=softness, mode=mode
+                    -abs_diff,
+                    dim=-1,
+                    softness=softness,
+                    mode=mode,
+                    return_log_probs=project_return_log,
                 )  # (..., ..., 2, [n])
                 idx_k = proj[..., 0, :]  # (..., ..., [n])
                 idx_kp1 = proj[..., 1, :]  # (..., ..., [n])
-                soft_index = (1.0 - a_b) * idx_k + a_b * idx_kp1  # (..., ..., [n])
+                if project_return_log:
+                    soft_index = _logaddexp_weighted(idx_k, idx_kp1, a_b)
+                    soft_index_is_log = True
+                else:
+                    soft_index = (1.0 - a_b) * idx_k + a_b * idx_kp1
             else:
                 anchors = x_sorted[..., k, None]  # (..., ..., 1)
                 abs_diff = torch.abs(
                     anchors[..., :, None] - x_last[..., None, :]
                 )  # (..., ..., 1, n)
                 soft_index = _proj_simplex(
-                    -abs_diff, dim=-1, softness=softness, mode=mode
+                    -abs_diff,
+                    dim=-1,
+                    softness=softness,
+                    mode=mode,
+                    return_log_probs=project_return_log,
                 )[..., 0, :]  # (..., ..., [n])
+                soft_index_is_log = project_return_log
         elif method == "neuralsort":
             A = abs(
                 x_last[..., :, None] - x_last[..., None, :],
@@ -863,20 +1074,33 @@ def argquantile(
                     coef[..., :, None] * x_last[..., None, :] + A_sum[..., None, :]
                 )  # (..., 2, n)
                 proj = _proj_simplex(
-                    z, dim=-1, softness=softness, mode=mode
+                    z,
+                    dim=-1,
+                    softness=softness,
+                    mode=mode,
+                    return_log_probs=project_return_log,
                 )  # (..., ..., 2, [n])
                 idx_k = proj[..., 0, :]  # (..., ..., [n])
                 idx_k1 = proj[..., 1, :]  # (..., ..., [n])
-                soft_index = (1.0 - a_b) * idx_k + a_b * idx_k1  # (..., ..., [n])
+                if project_return_log:
+                    soft_index = _logaddexp_weighted(idx_k, idx_k1, a_b)
+                    soft_index_is_log = True
+                else:
+                    soft_index = (1.0 - a_b) * idx_k + a_b * idx_k1
             else:
                 coef = (n + 1 - 2 * (k + 1)).unsqueeze(0)  # (1,)
                 coef = torch.broadcast_to(coef, (*batch_dims, 1))  # (..., 1)
                 z = -(
                     coef[..., :, None] * x_last[..., None, :] + A_sum[..., None, :]
                 )  # (..., 1, n)
-                soft_index = _proj_simplex(z, dim=-1, softness=softness, mode=mode)[
-                    ..., 0, :
-                ]  # (..., ..., [n])
+                soft_index = _proj_simplex(
+                    z,
+                    dim=-1,
+                    softness=softness,
+                    mode=mode,
+                    return_log_probs=project_return_log,
+                )[..., 0, :]  # (..., ..., [n])
+                soft_index_is_log = project_return_log
         elif method == "ot":
             if take_next:
                 mu = torch.ones((n,), dtype=x.dtype, device=x.device) / n  # ([n],)
@@ -901,13 +1125,18 @@ def argquantile(
                     nu=nu,
                     softness=softness,
                     mode=mode,
+                    return_log_probs=project_return_log,
                     **ot_kwargs,
                 )  # (..., ..., [n], 4)
 
                 soft_index = torch.swapaxes(out, -2, -1)  # (..., ..., 4, [n])
                 idx_k = soft_index[..., 1, :]  # (...,  ..., [n])
                 idx_k1 = soft_index[..., 2, :]  # (..., ..., [n])
-                soft_index = (1.0 - a_b) * idx_k + a_b * idx_k1  # (..., ..., [n])
+                if project_return_log:
+                    soft_index = _logaddexp_weighted(idx_k, idx_k1, a_b)
+                    soft_index_is_log = True
+                else:
+                    soft_index = (1.0 - a_b) * idx_k + a_b * idx_k1
             else:
                 mu = torch.ones((n,), dtype=x.dtype, device=x.device) / n  # ([n],)
                 nu = torch.stack(
@@ -929,12 +1158,14 @@ def argquantile(
                     nu=nu,
                     softness=softness,
                     mode=mode,
+                    return_log_probs=project_return_log,
                     **ot_kwargs,
                 )  # (..., ..., [n], 3)
 
                 soft_index = torch.swapaxes(out, -2, -1)  # (..., ..., 3, [n])
                 idx_k = soft_index[..., 1, :]  # (...,  ..., [n])
                 soft_index = idx_k  # (..., ..., [n]))
+                soft_index_is_log = project_return_log
         elif method == "sorting_network":
             P = _argsort_via_sorting_network(
                 x_last, softness, mode, descending=False, standardized=standardize
@@ -952,7 +1183,12 @@ def argquantile(
         else:
             soft_index = torch.unsqueeze(soft_index, dim=dim)  # (..., {1}, ..., [n])
 
-    return soft_index
+    return _maybe_log_soft_index(
+        soft_index,
+        return_log_probs,
+        already_log=soft_index_is_log,
+        log_prob_eps=log_prob_eps,
+    )
 
 
 def quantile(
@@ -972,6 +1208,8 @@ def quantile(
     ot_kwargs: dict | None = None,
     return_argquantile: bool = False,
     gated_grad: bool = True,
+    return_log_probs: bool = False,
+    log_prob_eps: float | torch.Tensor | None = None,
 ) -> torch.Tensor:  # (..., {1}, ...)
     """Performs a soft version of [torch.quantile](https://pytorch.org/docs/stable/generated/torch.quantile.html) of `x` along the specified dim.
 
@@ -981,11 +1219,15 @@ def quantile(
     **Extra Arguments:**
 
     - `gated_grad`: If `False`, stops the gradient flow through the soft index. True gives gated 'SiLU-style' gradients, while False gives integrated 'Softplus-style' gradients.
+    - `return_argquantile`: If True, returns the soft argquantile together with the quantile value.
+    - `return_log_probs`: If True and `return_argquantile=True`, returns the argquantile as log probabilities instead of probabilities. Values are unchanged.
+    - `log_prob_eps`: Optional probability floor used only with `return_log_probs=True`. When set, probabilities are floored before taking `log` and renormalized along the soft-index dimension.
 
     **Returns:**
 
     Tensor of shape (..., {1}, ...) for scalar q, or (k, ..., {1}, ...) for vector q of length k (q dimension prepended). Represents the soft q-quantile of `x` along the specified dim.
     """
+    _validate_log_prob_request(return_log_probs, log_prob_eps)
 
     if mode == "hard":
         quantile_val = torch.quantile(
@@ -999,6 +1241,8 @@ def quantile(
                 keepdim=keepdim,
                 mode="hard",
                 interpolation=interpolation,
+                return_log_probs=return_log_probs,
+                log_prob_eps=log_prob_eps,
             )
             return quantile_val, soft_index
     else:
@@ -1022,6 +1266,8 @@ def quantile(
                     ot_kwargs=ot_kwargs,
                     return_argquantile=return_argquantile,
                     gated_grad=gated_grad,
+                    return_log_probs=return_log_probs,
+                    log_prob_eps=log_prob_eps,
                 )
                 for qi in q_t_check
             ]
@@ -1069,6 +1315,12 @@ def quantile(
             elif keepdim:
                 quantile_val = quantile_val.unsqueeze(_dim)
         else:
+            soft_index_is_log = (
+                return_argquantile
+                and return_log_probs
+                and log_prob_eps is None
+                and mode == "smooth"
+            )
             soft_index = argquantile(
                 x,
                 q=q,
@@ -1080,10 +1332,13 @@ def quantile(
                 interpolation=interpolation,
                 standardize=standardize,
                 ot_kwargs=ot_kwargs,
+                return_log_probs=soft_index_is_log,
             )  # (..., 1, ..., [n])
             if not gated_grad:
                 soft_index = soft_index.detach()
-            quantile_val = take_along_dim(x, soft_index, dim=_dim)  # (..., 1, ...)
+            quantile_val = take_along_dim(
+                x, _soft_index_probs(soft_index, soft_index_is_log), dim=_dim
+            )  # (..., 1, ...)
             if not keepdim:
                 soft_index = torch.squeeze(soft_index, dim=_dim)  # (..., ..., [n])
                 quantile_val = torch.squeeze(quantile_val, dim=_dim)  # (..., ...)
@@ -1093,6 +1348,12 @@ def quantile(
                         *(1,) * num_dims
                     )  # (1..., 1, 1...)
             if return_argquantile:
+                soft_index = _maybe_log_soft_index(
+                    soft_index,
+                    return_log_probs,
+                    already_log=soft_index_is_log,
+                    log_prob_eps=log_prob_eps,
+                )
                 return quantile_val, soft_index
     return quantile_val
 
@@ -1106,6 +1367,8 @@ def argmedian(
     method: Literal["ot", "softsort", "neuralsort", "sorting_network"] = "neuralsort",
     standardize: bool = True,
     ot_kwargs: dict | None = None,
+    return_log_probs: bool = False,
+    log_prob_eps: float | torch.Tensor | None = None,
 ) -> SoftIndex:  # (..., {1}, ..., [n])
     """Computes the soft argmedian of `x` along the specified dim.
     Implemented as [`softtorch.argquantile`][] with q=0.5, see respective documentation for details.
@@ -1121,6 +1384,8 @@ def argmedian(
         interpolation="lower",  # same as torch.median
         standardize=standardize,
         ot_kwargs=ot_kwargs,
+        return_log_probs=return_log_probs,
+        log_prob_eps=log_prob_eps,
     )
 
 
@@ -1136,10 +1401,14 @@ def median(
     standardize: bool = True,
     ot_kwargs: dict | None = None,
     gated_grad: bool = True,
+    return_log_probs: bool = False,
+    log_prob_eps: float | torch.Tensor | None = None,
 ) -> torch.Tensor | torch.return_types.median[torch.Tensor, SoftIndex]:
     """Performs a soft version of [torch.median](https://pytorch.org/docs/stable/generated/torch.median.html) of `x` along the specified dim.
     Implemented as [`softtorch.quantile`][] with q=0.5, see respective documentation for details.
     """
+    _validate_log_prob_request(return_log_probs, log_prob_eps)
+
     if dim is None:
         if keepdim:
             raise ValueError("keepdim=True is not supported when dim=None")
@@ -1160,6 +1429,9 @@ def median(
             soft_index = F.one_hot(indices, num_classes=x.shape[dim]).to(
                 x.dtype
             )  # (..., {1}, ..., [n])
+            soft_index = _maybe_log_soft_index(
+                soft_index, return_log_probs, log_prob_eps=log_prob_eps
+            )
             ret = torch.return_types.median(
                 (median_val, soft_index)
             )  # (..., {1}, ...), (..., {1}, ..., [n])
@@ -1180,6 +1452,8 @@ def median(
                 ot_kwargs=ot_kwargs,
                 return_argquantile=False,
                 gated_grad=gated_grad,
+                return_log_probs=return_log_probs,
+                log_prob_eps=log_prob_eps,
             )
             return quantile_val
         quantile_val, soft_index = quantile(
@@ -1195,6 +1469,8 @@ def median(
             ot_kwargs=ot_kwargs,
             return_argquantile=True,
             gated_grad=gated_grad,
+            return_log_probs=return_log_probs,
+            log_prob_eps=log_prob_eps,
         )  # (..., ...), (..., ..., [n])
         if dim is None:
             return quantile_val  # ({1},)
@@ -1214,6 +1490,8 @@ def _argtopk(
     method: Literal["ot", "softsort", "neuralsort", "sorting_network"] = "neuralsort",
     standardize: bool = True,
     ot_kwargs: dict | None = None,
+    return_log_probs: bool = False,
+    log_prob_eps: float | torch.Tensor | None = None,
 ) -> SoftIndex:  # (..., k, ...), (..., k, ..., [n])
     """Performs a soft version of argtopk of `x` along the specified dim.
 
@@ -1242,11 +1520,16 @@ def _argtopk(
     - `standardize`: If True, standardizes and squashes the input `x` along the specified dim before applying the softtopk operation. This can improve numerical stability and performance, especially when the values in `x` vary widely in scale.
 
     - `ot_kwargs`: Additional optional keyword arguments to pass to the OT projection operator, e.g., to control the number of max iterations or tolerance.
+    - `return_log_probs`: If True, returns log probabilities instead of probabilities. Exact zero probabilities are represented as `-inf`.
+    - `log_prob_eps`: Optional probability floor used only with `return_log_probs=True`. When set, probabilities are floored before taking `log` and renormalized along the soft-index dimension.
 
     **Returns:**
 
-    SoftIndex of shape (..., k, ..., [n]) (positive Tensor which sums to 1 over the last dimension). Represents the soft indices of the top-k values.
+    SoftIndex of shape (..., k, ..., [n]) representing the soft indices of the top-k values. By default this contains probabilities that sum to 1 over the last dimension; if `return_log_probs=True`, it contains log probabilities instead.
     """
+    _validate_log_prob_request(return_log_probs, log_prob_eps)
+    project_return_log = return_log_probs and log_prob_eps is None
+
     if k <= 0:
         raise ValueError(f"k must be positive, got k={k}")
     if dim is None:
@@ -1261,6 +1544,7 @@ def _argtopk(
         soft_index = F.one_hot(indices, num_classes=x.shape[dim]).to(
             x.dtype
         )  # (..., k, ..., [n])
+        soft_index_is_log = False
     else:
         x = _ensure_float(x)
         x_last = torch.movedim(x, dim, -1)  # (..., ..., n)
@@ -1273,8 +1557,13 @@ def _argtopk(
                 anchors[..., :, None] - x_last[..., None, :]
             )  # (..., ..., k, n)
             soft_index = _proj_simplex(
-                -abs_diff, dim=-1, softness=softness, mode=mode
+                -abs_diff,
+                dim=-1,
+                softness=softness,
+                mode=mode,
+                return_log_probs=project_return_log,
             )  # (..., ..., k, [n])
+            soft_index_is_log = project_return_log
         elif method == "neuralsort":
             A = abs(
                 x_last[..., :, None] - x_last[..., None, :],
@@ -1293,8 +1582,13 @@ def _argtopk(
                 coef[..., :, None] * x_last[..., None, :] + A_sum[..., None, :]
             )  # (..., ..., k, n)
             soft_index = _proj_simplex(
-                z, dim=-1, softness=softness, mode=mode
+                z,
+                dim=-1,
+                softness=softness,
+                mode=mode,
+                return_log_probs=project_return_log,
             )  # (..., ..., k, [n])
+            soft_index_is_log = project_return_log
         elif method == "ot":
             if k == n:
                 soft_index = argsort(
@@ -1306,7 +1600,9 @@ def _argtopk(
                     method=method,
                     standardize=False,
                     ot_kwargs=ot_kwargs,
+                    return_log_probs=project_return_log,
                 )  # (..., ..., k, [n])
+                soft_index_is_log = project_return_log
             else:
                 anchors = (
                     torch.linspace(0, k, k + 1, dtype=x.dtype, device=x.device) / k
@@ -1331,20 +1627,33 @@ def _argtopk(
                 if ot_kwargs is None:
                     ot_kwargs = {}
                 out = _proj_transport_polytope(
-                    cost=cost, mu=mu, nu=nu, softness=softness, mode=mode, **ot_kwargs
+                    cost=cost,
+                    mu=mu,
+                    nu=nu,
+                    softness=softness,
+                    mode=mode,
+                    return_log_probs=project_return_log,
+                    **ot_kwargs,
                 )  # (..., ..., [n], k+1)
                 soft_index = torch.movedim(out, -2, -1)  # (..., ..., k+1, [n])
                 soft_index = soft_index[..., :k, :]  # (..., ..., k, [n])
+                soft_index_is_log = project_return_log
         elif method == "sorting_network":
             P = _argsort_via_sorting_network(
                 x_last, softness, mode, descending=True, standardized=standardize
             )  # (..., ..., n, [n])
             soft_index = P[..., :k, :]  # (..., ..., k, [n])
+            soft_index_is_log = False
         else:
             raise ValueError(f"Invalid method: {method}")
 
         soft_index = torch.movedim(soft_index, -2, dim)  # (..., k, ..., [n])
-    return soft_index
+    return _maybe_log_soft_index(
+        soft_index,
+        return_log_probs,
+        already_log=soft_index_is_log,
+        log_prob_eps=log_prob_eps,
+    )
 
 
 def topk(
@@ -1359,6 +1668,8 @@ def topk(
     standardize: bool = True,
     ot_kwargs: dict | None = None,
     gated_grad: bool = True,
+    return_log_probs: bool = False,
+    log_prob_eps: float | torch.Tensor | None = None,
 ) -> torch.return_types.topk[
     torch.Tensor, SoftIndex
 ]:  # (..., k, ...), (..., k, ..., [n])
@@ -1394,13 +1705,17 @@ def topk(
 
     - `ot_kwargs`: Additional optional keyword arguments to pass to the OT projection operator, e.g., to control the number of max iterations or tolerance.
     - `gated_grad`: If `False`, stops the gradient flow through the soft index. True gives gated 'SiLU-style' gradients, while False gives integrated 'Softplus-style' gradients.
+    - `return_log_probs`: If True, returns `indices` as log probabilities instead of probabilities. `values` are unchanged.
+    - `log_prob_eps`: Optional probability floor used only with `return_log_probs=True`. When set, probabilities are floored before taking `log` and renormalized along the soft-index dimension.
 
     **Returns:**
 
     - Namedtuple containing two fields:
         - `values`: Top-k values of `x`, shape (..., k, ...).
-        - `indices`: SoftIndex of shape (..., k, ..., [n]) (positive Tensor which sums to 1 over the last dimension). Represents the soft indices of the top-k values.
+        - `indices`: SoftIndex of shape (..., k, ..., [n]) representing the soft indices of the top-k values. By default this contains probabilities that sum to 1 over the last dimension; if `return_log_probs=True`, it contains log probabilities instead.
     """
+    _validate_log_prob_request(return_log_probs, log_prob_eps)
+
     if k <= 0:
         raise ValueError(f"k must be positive, got k={k}")
     if dim is None:
@@ -1416,6 +1731,9 @@ def topk(
         soft_index = F.one_hot(indices, num_classes=x.shape[dim]).to(
             x.dtype
         )  # (..., k, ..., [n])
+        soft_index = _maybe_log_soft_index(
+            soft_index, return_log_probs, log_prob_eps=log_prob_eps
+        )
     elif method in ("fast_soft_sort", "smooth_sort", "sorting_network"):
         sorted_out = sort(
             x,
@@ -1429,6 +1747,7 @@ def topk(
         values = torch.narrow(sorted_out.values, dim, 0, k)  # (..., k, ...)
         soft_index = None
     else:
+        soft_index_is_log = return_log_probs and log_prob_eps is None and mode == "smooth"
         soft_index = _argtopk(
             x=x,
             k=k,
@@ -1438,12 +1757,21 @@ def topk(
             method=method,
             standardize=standardize,
             ot_kwargs=ot_kwargs,
+            return_log_probs=soft_index_is_log,
         )  # (..., k, ..., [n])
         if not gated_grad:
             soft_index_tmp = soft_index.detach()
         else:
             soft_index_tmp = soft_index
-        values = take_along_dim(x, soft_index_tmp, dim=dim)  # (..., k, ...)
+        values = take_along_dim(
+            x, _soft_index_probs(soft_index_tmp, soft_index_is_log), dim=dim
+        )  # (..., k, ...)
+        soft_index = _maybe_log_soft_index(
+            soft_index,
+            return_log_probs,
+            already_log=soft_index_is_log,
+            log_prob_eps=log_prob_eps,
+        )
     return torch.return_types.topk((values, soft_index))
 
 

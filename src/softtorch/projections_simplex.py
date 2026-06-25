@@ -216,6 +216,7 @@ def _proj_simplex(
     dim: int,
     softness: float | torch.Tensor = 0.1,
     mode: Literal["smooth", "c0", "c1", "c2"] = "smooth",
+    return_log_probs: bool = False,
 ) -> torch.Tensor:  # (..., [n], ...)
     """Projects `x` onto the unit simplex along the specified dim.
 
@@ -229,7 +230,10 @@ def _proj_simplex(
     n = x.shape[dim]
     _x = x / softness
     if mode == "smooth":
-        soft_index = F.softmax(_x, dim=dim)
+        if return_log_probs:
+            soft_index = F.log_softmax(_x, dim=dim)
+        else:
+            soft_index = F.softmax(_x, dim=dim)
     elif mode == "c0":
         _x = torch.movedim(_x, dim, -1)
         *batch_sizes, n = _x.shape
@@ -251,4 +255,6 @@ def _proj_simplex(
         soft_index = proj(_x)
         soft_index = soft_index.reshape(*batch_sizes, n)
         soft_index = torch.movedim(soft_index, -1, dim)
+    if return_log_probs and mode != "smooth":
+        soft_index = torch.log(soft_index)
     return soft_index
