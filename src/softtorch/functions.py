@@ -505,9 +505,11 @@ def max(
             return_log_probs=soft_index_is_log,
         )  # (..., 1, ..., [n])
         if not gated_grad:
-            soft_index = soft_index.detach()
+            soft_index_tmp = soft_index.detach()
+        else:
+            soft_index_tmp = soft_index
         values = take_along_dim(
-            x, _soft_index_probs(soft_index, soft_index_is_log), dim=dim
+            x, _soft_index_probs(soft_index_tmp, soft_index_is_log), dim=dim
         )  # (..., 1, ...)
         if dim is None:
             values = values.reshape(*(1,) * num_dims)  # (1..., 1, 1...)
@@ -882,9 +884,11 @@ def sort(
                 return_log_probs=soft_index_is_log,
             )  # (..., n, ..., [n])
             if not gated_grad:
-                soft_index = soft_index.detach()
+                soft_index_tmp = soft_index.detach()
+            else:
+                soft_index_tmp = soft_index
             values = take_along_dim(
-                x, _soft_index_probs(soft_index, soft_index_is_log), dim=dim
+                x, _soft_index_probs(soft_index_tmp, soft_index_is_log), dim=dim
             )
             if not return_indices:
                 soft_index = None
@@ -1335,9 +1339,11 @@ def quantile(
                 return_log_probs=soft_index_is_log,
             )  # (..., 1, ..., [n])
             if not gated_grad:
-                soft_index = soft_index.detach()
+                soft_index_tmp = soft_index.detach()
+            else:
+                soft_index_tmp = soft_index
             quantile_val = take_along_dim(
-                x, _soft_index_probs(soft_index, soft_index_is_log), dim=_dim
+                x, _soft_index_probs(soft_index_tmp, soft_index_is_log), dim=_dim
             )  # (..., 1, ...)
             if not keepdim:
                 soft_index = torch.squeeze(soft_index, dim=_dim)  # (..., ..., [n])
