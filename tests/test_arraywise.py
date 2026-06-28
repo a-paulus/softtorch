@@ -1176,33 +1176,71 @@ def test_gated_grad(fn_name):
 
 
 @pytest.mark.parametrize(
+    "case_name, call",
+    [
+        (
+            "max",
+            lambda x, **kwargs: st.max(
+                x, dim=-1, method="softsort", mode="smooth", **kwargs
+            ).indices,
+        ),
+        (
+            "min",
+            lambda x, **kwargs: st.min(
+                x, dim=-1, method="softsort", mode="smooth", **kwargs
+            ).indices,
+        ),
+        (
+            "sort",
+            lambda x, **kwargs: st.sort(
+                x, dim=-1, method="softsort", mode="smooth", **kwargs
+            ).indices,
+        ),
+        (
+            "quantile",
+            lambda x, **kwargs: st.quantile(
+                x,
+                q=0.5,
+                dim=-1,
+                method="softsort",
+                mode="smooth",
+                return_argquantile=True,
+                **kwargs,
+            )[1],
+        ),
+        (
+            "median",
+            lambda x, **kwargs: st.median(
+                x, dim=-1, method="softsort", mode="smooth", **kwargs
+            ).indices,
+        ),
+        (
+            "topk",
+            lambda x, **kwargs: st.topk(
+                x, k=2, dim=-1, method="softsort", mode="smooth", **kwargs
+            ).indices,
+        ),
+    ],
+)
+@pytest.mark.parametrize(
     "return_log_probs, log_prob_eps",
     [(False, None), (True, None), (True, 1e-3)],
 )
-def test_topk_gated_grad_false_preserves_returned_index_gradients(
-    return_log_probs, log_prob_eps
+def test_gated_grad_false_preserves_returned_index_gradients(
+    case_name, call, return_log_probs, log_prob_eps
 ):
     x = common.gradient_input((5,), torch.float64)
     kwargs = {"return_log_probs": return_log_probs}
     if log_prob_eps is not None:
         kwargs["log_prob_eps"] = log_prob_eps
 
-    out = st.topk(
-        x,
-        k=2,
-        dim=-1,
-        mode="smooth",
-        method="softsort",
-        softness=1.0,
-        gated_grad=False,
-        **kwargs,
-    )
+    indices = call(x, softness=1.0, gated_grad=False, **kwargs)
     weights = torch.arange(
-        out.indices.numel(), dtype=out.indices.dtype, device=out.indices.device
-    ).reshape_as(out.indices)
-    grad = torch.autograd.grad(torch.sum(out.indices * weights), x)[0]
+        indices.numel(), dtype=indices.dtype, device=indices.device
+    ).reshape_as(indices)
+    grad = torch.autograd.grad(torch.sum(indices * weights), x)[0]
 
-    common.assert_finite(grad, msg="topk returned indices gated_grad=False")
+    common.assert_finite(grad, msg=f"{case_name} returned indices gated_grad=False")
     assert torch.any(grad != 0)
 
 
